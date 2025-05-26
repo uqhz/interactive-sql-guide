@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SQL Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Visualization & Content Choices:
+        - Report Info: SQL concepts, syntax, examples.
+        - Goal: Teach basic to intermediate SQL interactively, with AI assistance.
+        - Viz/Presentation: Text explanations, formatted SQL code examples, HTML tables for query results, AI-generated explanations/queries.
+        - Interaction:
+            - Navigational buttons.
+            - Embedded "Try SQL" widgets: textarea for input, JS-based SQL execution, results display.
+            - ✨ "Explain SQL" button: Sends user's query to Gemini API, displays explanation.
+            - ✨ "Suggest a Query" button: Prompts Gemini API for a topic-relevant query, populates textarea.
+            - Links to external sites.
+        - Justification: Embedded widgets offer immediate practice. Gemini features provide on-demand clarification and inspiration.
+        - Library/Method: Vanilla JS for SQL widgets, navigation, Gemini API calls. Tailwind for styling.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. Chart.js/Plotly.js not needed. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .code-block {
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #1f2937; /* Tailwind gray-800 */
+            border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+        }
+        .code-block pre {
+            margin: 0;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* Tailwind slate-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* Tailwind slate-400 */
+        }
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+            border-radius: 0.375rem;
+        }
+        .gemini-explanation, .gemini-suggestion-status {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <nav class="w-full md:w-72 bg-sky-700 text-white p-4 md:p-6 space-y-1 shadow-lg">
+            <h1 class="text-2xl font-bold mb-6 border-b border-sky-500 pb-2">SQL Guide</h1>
+            <button data-target="intro" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Introduction</button>
+            <button data-target="core-concepts" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Core Concepts</button>
+            
+            <p class="text-xs uppercase text-sky-300 mt-3 mb-1 px-3 font-semibold">Session 1: Basics</p>
+            <button data-target="select-from" data-topic="Basic SELECT and FROM statements" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SELECT & FROM</button>
+            <button data-target="where-clause" data-topic="Basic WHERE clause for filtering" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">WHERE Clause</button>
+            <button data-target="practice-select-where" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Practice: Basics</button>
+            <button data-target="order-by" data-topic="ORDER BY clause for sorting" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">ORDER BY Clause</button>
+            <button data-target="limit-clause" data-topic="LIMIT clause for restricting results" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">LIMIT Clause</button>
+            
+            <p class="text-xs uppercase text-sky-300 mt-3 mb-1 px-3 font-semibold">Session 2: Intermediate</p>
+            <button data-target="where-advanced" data-topic="Advanced filtering with AND, OR, IN, BETWEEN, LIKE" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">More Filtering</button>
+            <button data-target="null-handling" data-topic="Working with NULL values using IS NULL and IS NOT NULL" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Working with NULLs</button>
+            <button data-target="aliases" data-topic="Using column aliases with AS" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Using Aliases (AS)</button>
+            <button data-target="aggregate-functions" data-topic="Aggregate functions like COUNT, SUM, AVG, MIN, MAX" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Aggregate Functions</button>
+            <button data-target="group-by" data-topic="GROUP BY clause for grouping rows" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Grouping Data (GROUP BY)</button>
+            <button data-target="having-clause" data-topic="HAVING clause for filtering groups" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Filtering Groups (HAVING)</button>
+            <button data-target="practice-intermediate" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Practice: Intermediate</button>
+
+            <p class="text-xs uppercase text-sky-300 mt-3 mb-1 px-3 font-semibold">Session 3: Advanced Concepts</p>
+            <button data-target="joins-conceptual" data-topic="Concept of JOINs (INNER, LEFT, RIGHT, FULL)" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Joining Tables (Conceptual)</button>
+            <button data-target="union-conceptual" data-topic="Concept of UNION and UNION ALL" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Combining Results (Conceptual)</button>
+            <button data-target="subqueries-conceptual" data-topic="Concept of Subqueries" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Subqueries (Conceptual)</button>
+            <button data-target="practice-advanced" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Practice: Advanced</button>
+
+            <button data-target="next-steps" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 mt-4 transition-colors text-sm">Next Steps & Resources</button>
+        </nav>
+
+        <main class="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto">
+            <section id="intro" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Welcome to the SQL Guide!</h2>
+                <p class="text-lg leading-relaxed">This interactive guide provides a practical introduction to querying databases using SQL, taking you from basic to intermediate concepts. We'll cover fundamental commands and functions to help you effectively retrieve and analyze data.</p>
+                <div class="bg-sky-100 border-l-4 border-sky-500 text-sky-700 p-4 rounded-md" role="alert">
+                    <p class="font-bold">Learning Path Overview:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2">
+                        <li>Core Database and SQL Concepts</li>
+                        <li>Session 1: Basic data retrieval (`SELECT`, `FROM`, `WHERE`, `ORDER BY`, `LIMIT`)</li>
+                        <li>Session 2: Intermediate querying (Advanced filtering, NULLs, Aliases, Aggregates, `GROUP BY`, `HAVING`)</li>
+                        <li>Session 3: Introduction to advanced concepts (JOINs, UNIONs - conceptual)</li>
+                        <li>Hands-On Practice throughout!</li>
+                    </ul>
+                </div>
+                 <p class="text-md leading-relaxed">Use the navigation on the left to move through the topics. Let's begin!</p>
+            </section>
+
+            <section id="core-concepts" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Core Database Concepts</h2>
+                <p class="text-lg leading-relaxed">Before diving into SQL commands, let's understand some basic terminology. These are the building blocks of any relational database.</p>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">What is a Database?</h3>
+                    <p>Think of a database as a highly organized digital filing cabinet. Its purpose is to store, manage, and retrieve information efficiently.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Why Do We Need SQL?</h3>
+                    <p><strong class="font-semibold">SQL (Structured Query Language)</strong> is the standard language for interacting with databases. SQL allows us to:</p>
+                    <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                        <li><strong class="font-semibold">Ask questions</strong> (query data) – Our focus!</li>
+                        <li>Update, insert, and delete data</li>
+                        <li>Manage database structures</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Tables, Columns, and Rows</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li><strong class="font-semibold">Table:</strong> A collection of related data (e.g., `Movies` table).</li>
+                        <li><strong class="font-semibold">Column (Field):</strong> A specific attribute (e.g., `Title`, `Year`).</li>
+                        <li><strong class="font-semibold">Row (Record):</strong> A single entry in a table (e.g., one movie's details).</li>
+                    </ul>
+                    <p class="mt-4">Our sample `Movies` table (now with a `Rating` column and some `NULL` values):</p>
+                    <div class="code-block mt-2">
+                        <pre>
+Table: Movies
+| Id | Title                       | Director          | Year | Length_minutes | Rating |
+|----|-----------------------------|-------------------|------|----------------|--------|
+| 1  | The Shawshank Redemption    | Frank Darabont    | 1994 | 142            | 9.3    |
+| 2  | The Godfather               | Francis Coppola   | 1972 | 175            | 9.2    |
+| 3  | The Dark Knight             | Christopher Nolan | 2008 | 152            | 9.0    |
+| 4  | Pulp Fiction                | Quentin Tarantino | 1994 | 154            | 8.9    |
+| 5  | Forrest Gump                | Robert Zemeckis   | 1994 | 142            | 8.8    |
+| 6  | Fight Club                  | David Fincher     | 1999 | 139            | 8.8    |
+| 7  | Inception                   | Christopher Nolan | 2010 | 148            | 8.8    |
+| 8  | The Matrix                  | Lana Wachowski    | 1999 | 136            | 8.7    |
+| 9  | Goodfellas                  | Martin Scorsese   | 1990 | 146            | 8.7    |
+| 10 | Seven Samurai               | Akira Kurosawa    | 1954 | 207            | 8.6    |
+| 11 | Mystery Movie               | null              | 2023 | 120            | 7.5    |
+| 12 | Short Film                  | Jane Doe          | 2024 | null           | 8.1    |
+| 13 | Untitled Project            | David Fincher     | 2025 | 150            | null   |</pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="select-from" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SELECT & FROM (Session 1)</h2>
+                <p class="text-lg leading-relaxed">The `SELECT` statement retrieves data, specifying columns. The `FROM` clause indicates the table.</p>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Basic Syntax</h3>
+                    <p>To select specific columns:</p>
+                    <div class="code-block my-2"><pre>SELECT column1, column2 FROM TableName;</pre></div>
+                    <p>To select all columns:</p>
+                    <div class="code-block my-2"><pre>SELECT * FROM TableName;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="Basic SELECT and FROM statements">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: `SELECT` & `FROM`</h3>
+                    <p class="mb-2 text-sm text-slate-600">Sample `Movies` columns: `Id`, `Title`, `Director`, `Year`, `Length_minutes`, `Rating`.</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title, Year FROM Movies;"></textarea>
+                    <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="where-clause" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">WHERE Clause (Session 1)</h2>
+                <p class="text-lg leading-relaxed">The `WHERE` clause filters records based on conditions. Operators: `=`, `>`, `<`, `>=`, `<=`, `!=` (or `<>`).</p>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Syntax</h3>
+                    <div class="code-block my-2"><pre>SELECT columns FROM TableName WHERE condition;</pre></div>
+                    <p>Example: Movies from 1994</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Director FROM Movies WHERE Year = 1994;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="Basic WHERE clause for filtering">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: Basic `WHERE`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title FROM Movies WHERE Director = 'Christopher Nolan';"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+            
+            <section id="practice-select-where" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Practice: Basics (Session 1)</h2>
+                <p class="text-lg leading-relaxed">Solidify `SELECT`, `FROM`, and basic `WHERE` with SQLBolt.</p>
+                <div class="p-6 bg-emerald-50 border-l-4 border-emerald-500 rounded-md shadow">
+                    <ul class="space-y-2">
+                        <li><a href="https://sqlbolt.com/lesson/select_queries_101" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 1: SELECT queries 101 &rarr;</a></li>
+                        <li><a href="https://sqlbolt.com/lesson/filtering_using_constraints" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 2: Queries with constraints (Pt. 1) &rarr;</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="order-by" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">ORDER BY Clause (Session 1)</h2>
+                <p class="text-lg leading-relaxed">The `ORDER BY` clause sorts results. Use `ASC` (default) or `DESC`.</p>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Syntax</h3>
+                    <div class="code-block my-2"><pre>SELECT columns FROM TableName ORDER BY column_to_sort [ASC|DESC];</pre></div>
+                    <p>Example: Movies by year, newest first.</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Year FROM Movies ORDER BY Year DESC;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="ORDER BY clause for sorting">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: `ORDER BY`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title, Length_minutes FROM Movies ORDER BY Length_minutes ASC;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="limit-clause" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">LIMIT Clause (Session 1)</h2>
+                <p class="text-lg leading-relaxed">The `LIMIT` clause restricts the number of rows returned.</p>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Syntax</h3>
+                    <div class="code-block my-2"><pre>SELECT columns FROM TableName [ORDER BY ...] LIMIT number;</pre></div>
+                    <p>Example: Top 3 longest movies.</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Length_minutes FROM Movies ORDER BY Length_minutes DESC LIMIT 3;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="LIMIT clause for restricting results">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: `LIMIT`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title FROM Movies ORDER BY Rating DESC LIMIT 5;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="where-advanced" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">More Filtering (Session 2)</h2>
+                <p class="text-lg leading-relaxed">Combine conditions and use powerful operators for precise filtering.</p>
+                
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">`AND` & `OR` Operators</h3>
+                    <p>`AND`: All conditions must be true. `OR`: At least one condition must be true. Use parentheses `()` to control order of evaluation for complex conditions.</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Director, Year FROM Movies WHERE Year > 1990 AND Director = 'Christopher Nolan';</pre></div>
+                    <div class="code-block my-2"><pre>SELECT Title, Year FROM Movies WHERE (Year < 1980 OR Year > 2010) AND Director = 'Akira Kurosawa';</pre></div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">`IN` Operator</h3>
+                    <p>Specifies multiple possible values for a column. Equivalent to multiple `OR` conditions.</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Director FROM Movies WHERE Director IN ('Christopher Nolan', 'David Fincher', 'Martin Scorsese');</pre></div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">`BETWEEN` Operator</h3>
+                    <p>Selects values within a given range (inclusive of start and end values).</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Year FROM Movies WHERE Year BETWEEN 1990 AND 1999;</pre></div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">`LIKE` Operator (Pattern Matching)</h3>
+                    <p>`%` matches zero or more characters. `_` matches a single character. `LIKE` is case-sensitive in some SQL databases by default, case-insensitive in others (or configurable).</p>
+                    <div class="code-block my-2"><pre>SELECT Title FROM Movies WHERE Title LIKE 'The%'; -- Titles starting with 'The'</pre></div>
+                    <div class="code-block my-2"><pre>SELECT Director FROM Movies WHERE Director LIKE '%Coppola%'; -- Directors containing 'Coppola'</pre></div>
+                    <div class="code-block my-2"><pre>SELECT Title FROM Movies WHERE Title LIKE '_u%'; -- Titles where the second letter is 'u'</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="Advanced filtering with AND, OR, IN, BETWEEN, LIKE">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: Advanced `WHERE`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title FROM Movies WHERE (Year BETWEEN 2000 AND 2010 OR Director = 'David Fincher') AND Title LIKE '%Matrix%';"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="null-handling" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Working with NULLs (Session 2)</h2>
+                <p class="text-lg leading-relaxed">`NULL` represents missing, unknown, or not applicable data. It's not the same as an empty string or zero. Use `IS NULL` or `IS NOT NULL` to check for it. Standard comparison operators (`=`, `!=`) don't work as expected with `NULL`.</p>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Syntax & Examples</h3>
+                    <p>Find movies with an unknown director:</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Director FROM Movies WHERE Director IS NULL;</pre></div>
+                    <p>Find movies where the length is known (not NULL):</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Length_minutes FROM Movies WHERE Length_minutes IS NOT NULL;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="Working with NULL values using IS NULL and IS NOT NULL">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: `IS NULL` / `IS NOT NULL`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title, Rating FROM Movies WHERE Rating IS NULL AND Year > 2000;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="aliases" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Using Aliases (AS) (Session 2)</h2>
+                <p class="text-lg leading-relaxed">Aliases (`AS`) give temporary, more readable names to columns or tables in your query results. The `AS` keyword is optional for column aliases in many SQL dialects, but good for clarity.</p>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Column Alias Syntax & Examples</h3>
+                    <div class="code-block my-2"><pre>SELECT Title AS MovieTitle, Length_minutes AS DurationInMinutes FROM Movies;</pre></div>
+                    <p>You can use aliases in `ORDER BY` clauses:</p>
+                    <div class="code-block my-2"><pre>SELECT Title, Year AS ReleaseYear FROM Movies ORDER BY ReleaseYear DESC;</pre></div>
+                    <p class="text-sm text-slate-600 italic">Table aliases are mainly used with JOINs to shorten table names or distinguish between tables when joining a table to itself. We'll discuss JOINs conceptually later.</p>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="Using column aliases with AS">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: Column Aliases</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Title AS MovieName, Rating AS UserRating FROM Movies WHERE Rating > 8.8 ORDER BY UserRating DESC;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="aggregate-functions" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Aggregate Functions (Session 2)</h2>
+                <p class="text-lg leading-relaxed">Aggregate functions perform calculations on a set of values (e.g., a column) and return a single summary value. They often ignore `NULL` values, except for `COUNT(*)`. </p>
+                <ul class="list-disc list-inside ml-4 space-y-1">
+                    <li><strong class="font-semibold">`COUNT(*)`:</strong> Counts the total number of rows.</li>
+                    <li><strong class="font-semibold">`COUNT(column_name)`:</strong> Counts non-NULL values in the specified column.</li>
+                    <li><strong class="font-semibold">`SUM(column_name)`:</strong> Sums numeric values in the column.</li>
+                    <li><strong class="font-semibold">`AVG(column_name)`:</strong> Calculates the average of numeric values in the column.</li>
+                    <li><strong class="font-semibold">`MIN(column_name)`:</strong> Finds the minimum value in the column.</li>
+                    <li><strong class="font-semibold">`MAX(column_name)`:</strong> Finds the maximum value in the column.</li>
+                </ul>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Examples</h3>
+                    <div class="code-block my-2"><pre>SELECT COUNT(*) AS TotalMovies FROM Movies;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT COUNT(Director) AS DirectorsWithKnownMovies FROM Movies;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT AVG(Length_minutes) AS AverageDuration FROM Movies WHERE Length_minutes IS NOT NULL;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT MIN(Year) AS EarliestYear, MAX(Year) AS LatestYear FROM Movies;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT SUM(Length_minutes) AS TotalWatchTime FROM Movies WHERE Director = 'Christopher Nolan';</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="Aggregate functions like COUNT, SUM, AVG, MIN, MAX">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: Aggregate Functions</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT MAX(Rating) AS HighestRating, MIN(Rating) AS LowestRating FROM Movies WHERE Year > 1990;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="group-by" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Grouping Data (GROUP BY) (Session 2)</h2>
+                <p class="text-lg leading-relaxed">The `GROUP BY` statement groups rows that have the same values in specified columns into summary rows. It's often used with aggregate functions to calculate metrics for each group.</p>
+                <p>When using `GROUP BY`, any column in the `SELECT` list that is not an aggregate function <strong class="font-semibold">must be</strong> included in the `GROUP BY` clause.</p>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Syntax & Examples</h3>
+                    <p>Count the number of movies each director has made:</p>
+                    <div class="code-block my-2"><pre>SELECT Director, COUNT(*) AS NumberOfMovies
+FROM Movies
+WHERE Director IS NOT NULL -- Exclude movies with unknown directors for this count
+GROUP BY Director
+ORDER BY NumberOfMovies DESC;</pre></div>
+                    <p>Calculate the average rating for movies released each year:</p>
+                    <div class="code-block my-2"><pre>SELECT Year, AVG(Rating) AS AverageYearlyRating
+FROM Movies
+WHERE Rating IS NOT NULL
+GROUP BY Year
+ORDER BY Year;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="GROUP BY clause for grouping rows">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: `GROUP BY`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Year, COUNT(Title) AS MoviesPerYear FROM Movies GROUP BY Year ORDER BY MoviesPerYear DESC;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="having-clause" class="content-section space2 border-sky-200 pb-2">Filtering Groups (HAVING) (Session 2)</h2>
+                <p class="text-lg leading-relaxed">The `HAVING` clause is used to filter groups created by the `GROUP BY` clause. `WHERE` filters rows <em class="font-semibold">before</em> aggregation, while `HAVING` filters groups <em class="font-semibold">after</em> aggregation.</p>
+                <p>You can only use columns that are part of an aggregate function or are in the `GROUP BY` clause within the `HAVING` clause.</p>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Syntax & Examples</h3>
+                    <p>Find directors who have made more than 1 movie in our list:</p>
+                    <div class="code-block my-2"><pre>SELECT Director, COUNT(*) AS NumberOfMovies
+FROM Movies
+WHERE Director IS NOT NULL
+GROUP BY Director
+HAVING COUNT(*) > 1
+ORDER BY NumberOfMovies DESC;</pre></div>
+                    <p>Find years where the average movie rating was above 8.8:</p>
+                    <div class="code-block my-2"><pre>SELECT Year, AVG(Rating) AS AverageYearlyRating
+FROM Movies
+WHERE Rating IS NOT NULL
+GROUP BY Year
+HAVING AVG(Rating) > 8.8
+ORDER BY AverageYearlyRating DESC;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Movies" data-topic="HAVING clause for filtering groups">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try: `HAVING`</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Director, AVG(Length_minutes) AS AvgDuration FROM Movies WHERE Director IS NOT NULL GROUP BY Director HAVING AVG(Length_minutes) > 150;"></textarea>
+                     <div class="flex space-x-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                        <button class="explain-sql-button px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors">Explain SQL ✨</button>
+                        <button class="suggest-query-button px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">Suggest Query ✨</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="gemini-explanation bg-sky-50 border border-sky-200 text-sky-700 hidden"></div>
+                    <div class="gemini-suggestion-status text-sm text-indigo-600 mt-2 hidden"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+            
+            <section id="practice-intermediate" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Practice: Intermediate (Session 2)</h2>
+                <p class="text-lg leading-relaxed">Practice these intermediate concepts with SQLBolt.</p>
+                <div class="p-6 bg-emerald-50 border-l-4 border-emerald-500 rounded-md shadow">
+                    <ul class="space-y-2">
+                        <li><a href="https://sqlbolt.com/lesson/filtering_sorting_query_results" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 4: Filtering and sorting (revisit for more complex WHERE, ORDER BY) &rarr;</a></li>
+                        <li><a href="https://sqlbolt.com/lesson/select_queries_review" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 5: Simple SELECT Queries Review (includes LIMIT, basic aggregates) &rarr;</a></li>
+                        <li><a href="https://sqlbolt.com/lesson/multi_table_queries_with_joins" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 6: Multi-table queries with JOINs (relevant for `GROUP BY` concepts too) &rarr;</a></li>
+                        <li><a href="https://sqlbolt.com/lesson/aggregation_functions_and_group_by" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 10: Queries with aggregates (focus on `GROUP BY`, `HAVING`) &rarr;</a></li>
+                         <li><a href="https://sqlbolt.com/lesson/queries_with_nulls" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 11: Queries with NULLs &rarr;</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="joins-conceptual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Joining Tables (Conceptual - Session 3)</h2>
+                <p class="text-lg leading-relaxed">JOIN clauses combine rows from two or more tables based on a related column between them. This is crucial for working with relational data spread across multiple tables.</p>
+                <p class="italic text-sm text-slate-600">Note: Our interactive SQL widget currently supports single-table operations. The concepts below are for understanding.</p>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Types of JOINs</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-3">
+                        <li>
+                            <strong class="font-semibold">`INNER JOIN` (or just `JOIN`):</strong> Returns rows when there is at least one match in <strong class="font-semibold">both</strong> tables.
+                            <div class="code-block my-1 text-xs"><pre>SELECT Orders.OrderID, Customers.CustomerName
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;</pre></div>
+                        </li>
+                        <li>
+                            <strong class="font-semibold">`LEFT JOIN` (or `LEFT OUTER JOIN`):</strong> Returns all rows from the <strong class="font-semibold">left</strong> table (the first one mentioned), and the matched rows from the right table. If there's no match, the result is `NULL` from the right side.
+                            <div class="code-block my-1 text-xs"><pre>SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+LEFT JOIN Orders ON Customers.CustomerID = Orders.CustomerID;</pre></div>
+                        </li>
+                         <li>
+                            <strong class="font-semibold">`RIGHT JOIN` (or `RIGHT OUTER JOIN`):</strong> Returns all rows from the <strong class="font-semibold">right</strong> table (the second one mentioned), and the matched rows from the left table. If there's no match, the result is `NULL` from the left side. (Less common than LEFT JOIN, as you can often achieve the same by swapping table order and using LEFT JOIN).
+                            <div class="code-block my-1 text-xs"><pre>SELECT Orders.OrderID, Employees.LastName
+FROM Orders
+RIGHT JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID;</pre></div>
+                        </li>
+                        <li>
+                            <strong class="font-semibold">`FULL JOIN` (or `FULL OUTER JOIN`):</strong> Returns all rows when there is a match in <strong class="font-semibold">one</strong> of the tables. If there is no match, the result is `NULL` for the columns of the table that lacks a match. (Not supported by all DBs, e.g., MySQL requires a workaround using UNION of LEFT and RIGHT JOINs).
+                            <div class="code-block my-1 text-xs"><pre>SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+FULL OUTER JOIN Orders ON Customers.CustomerID = Orders.CustomerID;</pre></div>
+                        </li>
+                    </ul>
+                </div>
+                <p class="mt-4">The `ON` keyword specifies the join condition (how the tables are related).</p>
+            </section>
+
+            <section id="union-conceptual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Combining Results (UNION - Conceptual - Session 3)</h2>
+                <p class="text-lg leading-relaxed">The `UNION` operator is used to combine the result-set of two or more `SELECT` statements. It's different from `JOIN`s, as it appends rows from one query to another rather than columns.</p>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>The `SELECT` statements within `UNION` must have the same number of columns.</li>
+                    <li>The columns must also have similar data types.</li>
+                    <li>The columns in each `SELECT` statement must be in the same order.</li>
+                </ul>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">`UNION` vs `UNION ALL`</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li><strong class="font-semibold">`UNION`</strong>: Selects only distinct (unique) values by default.</li>
+                        <li><strong class="font-semibold">`UNION ALL`</strong>: Selects all values, including duplicates. Generally faster as it doesn't perform the distinct check.</li>
+                    </ul>
+                     <p class="mt-2">Example: Get a list of all cities from both Customers and Suppliers tables.</p>
+                    <div class="code-block my-1 text-xs"><pre>SELECT City FROM Customers
+UNION
+SELECT City FROM Suppliers
+ORDER BY City;</pre></div>
+                     <p class="mt-2">Example: Get all cities, including duplicates.</p>
+                    <div class="code-block my-1 text-xs"><pre>SELECT City FROM Customers
+UNION ALL
+SELECT City FROM Suppliers;</pre></div>
+                </div>
+            </section>
+
+            <section id="subqueries-conceptual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Subqueries (Conceptual - Session 3)</h2>
+                <p class="text-lg leading-relaxed">A subquery (or inner query, nested query) is a query embedded inside another SQL query. It can be used in various parts of the main query, such as the `SELECT`, `FROM`, `WHERE`, or `HAVING` clause.</p>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>The subquery is executed first, and its result is then used by the outer query.</li>
+                    <li>Subqueries must be enclosed in parentheses `()`.</li>
+                </ul>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Common Uses & Examples</h3>
+                    <p>1. Subquery in the `WHERE` clause (often with `IN` or comparison operators):</p>
+                    <p class="text-sm">Find all movies directed by directors who also directed "The Dark Knight".</p>
+                    <div class="code-block my-1 text-xs"><pre>SELECT Title, Director
+FROM Movies
+WHERE Director = (SELECT Director FROM Movies WHERE Title = 'The Dark Knight');</pre></div>
+                     <p class="text-sm">Find all customers who have placed orders.</p>
+                    <div class="code-block my-1 text-xs"><pre>SELECT CustomerName
+FROM Customers
+WHERE CustomerID IN (SELECT CustomerID FROM Orders);</pre></div>
+
+                    <p class="mt-3">2. Subquery in the `FROM` clause (creates a derived table):</p>
+                    <p class="text-sm">Select specific columns from a result of aggregated data.</p>
+                    <div class="code-block my-1 text-xs"><pre>SELECT DirectorName, NumMovies
+FROM (SELECT Director AS DirectorName, COUNT(*) AS NumMovies FROM Movies GROUP BY Director) AS DirectorStats
+WHERE NumMovies > 1;</pre></div>
+
+                     <p class="mt-3">3. Subquery in the `SELECT` list (scalar subquery - must return a single value):</p>
+                     <p class="text-sm">Show each movie title and the average rating of all movies (less common for this exact use, but demonstrates concept).</p>
+                    <div class="code-block my-1 text-xs"><pre>SELECT Title, (SELECT AVG(Rating) FROM Movies WHERE Rating IS NOT NULL) AS OverallAverageRating
+FROM Movies;</pre></div>
+                </div>
+                <p class="mt-4">Subqueries can be powerful but can also make queries complex and sometimes less performant if not written carefully. JOINs are often preferred for performance when equivalent.</p>
+            </section>
+            
+            <section id="practice-advanced" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Practice: Advanced (Session 3)</h2>
+                <p class="text-lg leading-relaxed">JOINs are fundamental for relational databases. Practice them on SQLBolt.</p>
+                <div class="p-6 bg-emerald-50 border-l-4 border-emerald-500 rounded-md shadow">
+                    <ul class="space-y-2">
+                        <li><a href="https://sqlbolt.com/lesson/multi_table_queries_with_joins" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 6: Multi-table queries with JOINs &rarr;</a></li>
+                        <li><a href="https://sqlbolt.com/lesson/joins_with_conditions_and_aliases" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 7: OUTER JOINs &rarr;</a></li>
+                        <li><a href="https://sqlbolt.com/lesson/a_short_note_on_nulls" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">SQLBolt Lesson 8: A short note on NULLs (often relevant with OUTER JOINs) &rarr;</a></li>
+                    </ul>
+                     <p class="mt-4 text-sm text-slate-600">While SQLBolt doesn't have dedicated `UNION` or complex subquery lessons in the same interactive way, understanding JOINs is a crucial step.</p>
+                </div>
+            </section>
+
+            <section id="next-steps" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Next Steps & Resources</h2>
+                <div class="bg-sky-100 border-l-4 border-sky-500 text-sky-700 p-6 rounded-md shadow">
+                    <h3 class="text-2xl font-medium mb-3">Key Concepts Covered:</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-1 text-sm">
+                        <li><strong>Session 1:</strong> `SELECT`, `FROM`, `WHERE` (basic), `ORDER BY`, `LIMIT`</li>
+                        <li><strong>Session 2:</strong> Advanced `WHERE` (`AND`, `OR`, `IN`, `BETWEEN`, `LIKE`), `IS NULL`, Aliases (`AS`), Aggregate Functions (`COUNT`, `SUM`, `AVG`, `MIN`, `MAX`), `GROUP BY`, `HAVING`</li>
+                        <li><strong>Session 3 (Conceptual):</strong> `JOIN` (Inner, Left, Right, Full), `UNION`, Subqueries</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-3 mt-6">Continue Your SQL Journey!</h3>
+                    <p class="mb-4">Practice is key! The more you use SQL, the more comfortable you'll become. Here are some excellent resources:</p>
+                    <ul class="space-y-3">
+                        <li><strong class="font-semibold">SQLBolt:</strong> <a href="https://sqlbolt.com/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">Finish all the lessons!</a></li>
+                        <li><strong class="font-semibold">W3Schools SQL Tutorial:</strong> <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">Great reference.</a></li>
+                        <li><strong class="font-semibold">SQLZOO:</strong> <a href="https://sqlzoo.net/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">Interactive tutorials & quizzes.</a></li>
+                        <li><strong class="font-semibold">Fun Challenge - SQL Murder Mystery:</strong> <a href="https://mystery.knightlab.com/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">Solve a crime with SQL!</a></li>
+                         <li><strong class="font-semibold">Fun Challenge - SQL Island:</strong> <a href="https://sql-island.informatik.uni-kl.de/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">Learn SQL by surviving.</a></li>
+                    </ul>
+                </div>
+                <p class="text-lg leading-relaxed mt-8 text-center font-semibold">Thank you for participating! Keep practicing and exploring the world of data!</p>
+            </section>
+        </main>
+    </div>
+
+<script>
+    const GEMINI_API_KEY = ""; // Empty string for Canvas environment to inject key
+    const GEMINI_API_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
+
+
+    const datasets = {
+        "Movies": [
+            { "Id": 1, "Title": "The Shawshank Redemption", "Director": "Frank Darabont", "Year": 1994, "Length_minutes": 142, "Rating": 9.3 },
+            { "Id": 2, "Title": "The Godfather", "Director": "Francis Coppola", "Year": 1972, "Length_minutes": 175, "Rating": 9.2 },
+            { "Id": 3, "Title": "The Dark Knight", "Director": "Christopher Nolan", "Year": 2008, "Length_minutes": 152, "Rating": 9.0 },
+            { "Id": 4, "Title": "Pulp Fiction", "Director": "Quentin Tarantino", "Year": 1994, "Length_minutes": 154, "Rating": 8.9 },
+            { "Id": 5, "Title": "Forrest Gump", "Director": "Robert Zemeckis", "Year": 1994, "Length_minutes": 142, "Rating": 8.8 },
+            { "Id": 6, "Title": "Fight Club", "Director": "David Fincher", "Year": 1999, "Length_minutes": 139, "Rating": 8.8 },
+            { "Id": 7, "Title": "Inception", "Director": "Christopher Nolan", "Year": 2010, "Length_minutes": 148, "Rating": 8.8 },
+            { "Id": 8, "Title": "The Matrix", "Director": "Lana Wachowski", "Year": 1999, "Length_minutes": 136, "Rating": 8.7 },
+            { "Id": 9, "Title": "Goodfellas", "Director": "Martin Scorsese", "Year": 1990, "Length_minutes": 146, "Rating": 8.7 },
+            { "Id": 10, "Title": "Seven Samurai", "Director": "Akira Kurosawa", "Year": 1954, "Length_minutes": 207, "Rating": 8.6 },
+            { "Id": 11, "Title": "Mystery Movie", "Director": null, "Year": 2023, "Length_minutes": 120, "Rating": 7.5 },
+            { "Id": 12, "Title": "Short Film", "Director": "Jane Doe", "Year": 2024, "Length_minutes": null, "Rating": 8.1 },
+            { "Id": 13, "Title": "Untitled Project", "Director": "David Fincher", "Year": 2025, "Length_minutes": 150, "Rating": null }
+        ]
+    };
+
+    const navButtons = document.querySelectorAll('.nav-button');
+    const contentSections = document.querySelectorAll('.content-section');
+    const mainContentArea = document.querySelector('main');
+
+    function setActiveSection(targetId) {
+        contentSections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === targetId) {
+                section.classList.add('active');
+            }
+        });
+        navButtons.forEach(button => {
+            button.classList.remove('bg-sky-800', 'font-semibold');
+            if (button.dataset.target === targetId) {
+                button.classList.add('bg-sky-800', 'font-semibold');
+            }
+        });
+        mainContentArea.scrollTop = 0;
+    }
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setActiveSection(button.dataset.target);
+        });
+    });
+
+    if (navButtons.length > 0) {
+        setActiveSection(navButtons[0].dataset.target);
+    }
+
+    const interactiveWidgets = document.querySelectorAll('.interactive-sql-widget');
+
+    interactiveWidgets.forEach(widget => {
+        const queryInput = widget.querySelector('.sql-query-input');
+        const runButton = widget.querySelector('.run-sql-button');
+        const explainButton = widget.querySelector('.explain-sql-button');
+        const suggestButton = widget.querySelector('.suggest-query-button');
+        const resultOutput = widget.querySelector('.sql-result-output');
+        const resultMessage = widget.querySelector('.sql-result-message');
+        const geminiExplanationDiv = widget.querySelector('.gemini-explanation');
+        const geminiSuggestionStatusDiv = widget.querySelector('.gemini-suggestion-status');
+        const tableName = widget.dataset.tableName;
+        const topic = widget.dataset.topic || "a general SQL query";
+        const dataset = datasets[tableName];
+
+        runButton.addEventListener('click', () => {
+            const query = queryInput.value.trim();
+            resultMessage.textContent = '';
+            resultOutput.innerHTML = '';
+            if (geminiExplanationDiv) {
+                geminiExplanationDiv.classList.add('hidden');
+                geminiExplanationDiv.textContent = '';
+            }
+
+
+            if (!query) {
+                resultMessage.textContent = 'Please enter an SQL query.';
+                resultMessage.className = 'sql-result-message mt-3 text-sm text-amber-600';
+                return;
+            }
+            if (!dataset) {
+                resultMessage.textContent = `Error: Dataset for table '${tableName}' not found.`;
+                resultMessage.className = 'sql-result-message mt-3 text-sm text-red-600';
+                return;
+            }
+
+            try {
+                const results = executeSimpleSQL(query, dataset, tableName);
+                displayResults(results, resultOutput, resultMessage);
+            } catch (error) {
+                resultMessage.textContent = `Error: ${error.message}`;
+                resultMessage.className = 'sql-result-message mt-3 text-sm text-red-600';
+                console.error("SQL Execution Error:", error);
+            }
+        });
+
+        if (explainButton) {
+            explainButton.addEventListener('click', async () => {
+                const queryToExplain = queryInput.value.trim();
+                if (!queryToExplain) {
+                    geminiExplanationDiv.textContent = 'Please enter a query to explain.';
+                    geminiExplanationDiv.className = 'gemini-explanation bg-amber-100 border border-amber-300 text-amber-700';
+                    geminiExplanationDiv.classList.remove('hidden');
+                    return;
+                }
+                
+                geminiExplanationDiv.textContent = 'Explaining with Gemini... ✨';
+                geminiExplanationDiv.className = 'gemini-explanation bg-sky-50 border border-sky-200 text-sky-700';
+                geminiExplanationDiv.classList.remove('hidden');
+
+                try {
+                    const prompt = `Explain the following SQL query in simple terms. What does it intend to do? Assume the query is run against a table named '${tableName}' with columns like Id, Title, Director, Year, Length_minutes, Rating.\n\nSQL Query:\n\`\`\`sql\n${queryToExplain}\n\`\`\`\n\nExplanation:`;
+                    
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { 
+                        contents: chatHistory,
+                        generationConfig: {
+                            temperature: 0.3,
+                            maxOutputTokens: 250
+                        }
+                    };
+                    const apiUrl = `${GEMINI_API_URL_BASE}?key=${GEMINI_API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: { message: "Unknown API error structure" } }));
+                        console.error('Gemini API Error Response:', errorData);
+                        throw new Error(`Gemini API error: ${response.status} ${response.statusText} - ${errorData.error?.message || 'Failed to fetch explanation.'}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.candidates && data.candidates.length > 0 &&
+                        data.candidates[0].content && data.candidates[0].content.parts &&
+                        data.candidates[0].content.parts.length > 0) {
+                        const explanation = data.candidates[0].content.parts[0].text;
+                        geminiExplanationDiv.textContent = explanation;
+                        geminiExplanationDiv.className = 'gemini-explanation bg-teal-50 border border-teal-200 text-teal-700';
+                    } else {
+                         console.error("Unexpected response structure from Gemini API:", data);
+                         throw new Error("Couldn't generate an explanation due to unexpected API response.");
+                    }
+
+                } catch (error) {
+                    console.error('Error calling Gemini API for explanation:', error);
+                    geminiExplanationDiv.textContent = `Error explaining query: ${error.message}`;
+                    geminiExplanationDiv.className = 'gemini-explanation bg-red-100 border border-red-300 text-red-700';
+                }
+            });
+        }
+        
+        if (suggestButton) {
+            suggestButton.addEventListener('click', async () => {
+                geminiSuggestionStatusDiv.textContent = 'Suggesting a query with Gemini... ✨';
+                geminiSuggestionStatusDiv.className = 'gemini-suggestion-status text-sm text-indigo-600 mt-2';
+                geminiSuggestionStatusDiv.classList.remove('hidden');
+                queryInput.value = '';
+
+                try {
+                    const prompt = `Generate a simple example SQL query that demonstrates the concept of "${topic}". The query should be runnable against a table named '${tableName}' which has columns: Id (integer, primary key), Title (text), Director (text, can be NULL), Year (integer), Length_minutes (integer, can be NULL), Rating (decimal, can be NULL). Only provide the SQL query itself, nothing else, no explanations, no markdown. The query should be a single line or appropriately formatted for a textarea.`;
+                    
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { 
+                        contents: chatHistory,
+                        generationConfig: {
+                            temperature: 0.7,
+                            maxOutputTokens: 100 
+                        }
+                    };
+                    const apiUrl = `${GEMINI_API_URL_BASE}?key=${GEMINI_API_KEY}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: { message: "Unknown API error structure" } }));
+                        console.error('Gemini API Error Response:', errorData);
+                        throw new Error(`Gemini API error: ${response.status} ${response.statusText} - ${errorData.error?.message || 'Failed to fetch suggestion.'}`);
+                    }
+                    const data = await response.json();
+                    
+                    if (data.candidates && data.candidates.length > 0 &&
+                        data.candidates[0].content && data.candidates[0].content.parts &&
+                        data.candidates[0].content.parts.length > 0) {
+                        let suggestedQuery = data.candidates[0].content.parts[0].text;
+                        suggestedQuery = suggestedQuery.replace(/^```sql\s*|```$/g, '').trim(); // Clean markdown
+                        queryInput.value = suggestedQuery;
+                        geminiSuggestionStatusDiv.textContent = 'Query suggested! Feel free to run or modify it.';
+                        geminiSuggestionStatusDiv.className = 'gemini-suggestion-status text-sm text-green-600 mt-2';
+                    } else {
+                        console.error("Unexpected response structure from Gemini API for suggestion:", data);
+                        throw new Error("Couldn't generate a suggestion due to unexpected API response.");
+                    }
+
+                } catch (error) {
+                    console.error('Error calling Gemini API for suggestion:', error);
+                    geminiSuggestionStatusDiv.textContent = `Error suggesting query: ${error.message}`;
+                    geminiSuggestionStatusDiv.className = 'gemini-suggestion-status text-sm text-red-600 mt-2';
+                    queryInput.value = `SELECT * FROM ${tableName} LIMIT 1; -- Error fallback`;
+                }
+            });
+        }
+    });
+
+
+    function executeSimpleSQL(query, data, expectedTableName) {
+        query = query.replace(/\s+/g, ' ').trim().replace(/;$/, '');
+        
+        const selectFromMatch = query.match(/^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)/i);
+        if (!selectFromMatch) throw new Error("Invalid query. Must start with 'SELECT ... FROM TableName'.");
+        
+        let selectClause = selectFromMatch[1].trim();
+        const fromTable = selectFromMatch[2].trim();
+
+        if (fromTable.toLowerCase() !== expectedTableName.toLowerCase()) {
+            throw new Error(`Table '${fromTable}' not found. This demo supports querying the '${expectedTableName}' table.`);
+        }
+
+        let processedData = [...data.map(row => ({...row}))]; 
+
+        let whereClause = '';
+        let groupByClause = '';
+        let havingClause = '';
+        let orderByClause = '';
+        let limitClause = '';
+
+        let remainingQuery = query.substring(selectFromMatch[0].length).trim();
+
+        const clausesOrder = ["WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"];
+        const clausesRegex = {};
+        clausesOrder.forEach(clause => {
+            clausesRegex[clause] = new RegExp(`\\s+${clause}\\s+(.+?)(?=\\s+(?:${clausesOrder.filter(c => c !== clause).join('|')})|$)`, "i");
+        });
+        
+        if (remainingQuery.match(/\sWHERE\s/i)) {
+             const match = remainingQuery.match(clausesRegex["WHERE"]);
+             if (match) { whereClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sGROUP\sBY\s/i)) {
+             const match = remainingQuery.match(clausesRegex["GROUP BY"]);
+             if (match) { groupByClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sHAVING\s/i)) {
+             const match = remainingQuery.match(clausesRegex["HAVING"]);
+             if (match) { havingClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sORDER\sBY\s/i)) {
+             const match = remainingQuery.match(clausesRegex["ORDER BY"]);
+             if (match) { orderByClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sLIMIT\s/i)) {
+             const match = remainingQuery.match(clausesRegex["LIMIT"]);
+             if (match) { limitClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+
+        if (whereClause) {
+            processedData = processedData.filter(row => evaluateCondition(whereClause, row, data[0]));
+        }
+        
+        let isAggregated = /COUNT\(|SUM\(|AVG\(|MIN\(|MAX\(/i.test(selectClause);
+        const selectedColumnsAndAliases = parseSelectColumns(selectClause, data[0]);
+
+        if (groupByClause) {
+            if (!isAggregated && !selectedColumnsAndAliases.some(c => c.isAggregate)) { // Check if any selected column is an aggregate
+                 // If no aggregate function is in SELECT but GROUP BY is used, this is generally an error in SQL
+                 // unless all selected columns are in GROUP BY. We'll allow it if selected columns are the group by columns.
+                const groupColsLower = groupByClause.split(',').map(c => c.trim().toLowerCase());
+                const selectedNonAggColsLower = selectedColumnsAndAliases.filter(c => !c.isAggregate).map(c => c.expression.toLowerCase());
+                if (!selectedNonAggColsLower.every(sc => groupColsLower.includes(sc))) {
+                    // This is a more lenient check. A strict SQL DB might error if non-aggregated selected columns are not exactly the group by columns.
+                    // For this tool, we'll proceed if it's just grouping.
+                }
+            }
+
+            const groupCols = groupByClause.split(',').map(c => c.trim().toLowerCase());
+            
+            if (data.length > 0) {
+                const firstRowKeys = Object.keys(data[0]).map(k => k.toLowerCase());
+                groupCols.forEach(gc => {
+                    if (!firstRowKeys.includes(gc)) throw new Error(`Column '${gc}' in GROUP BY not found.`);
+                });
+            }
+
+            const groups = {};
+            processedData.forEach(row => {
+                const groupKey = groupCols.map(col => row[Object.keys(row).find(k => k.toLowerCase() === col)] ?? 'NULL_GROUP_KEY').join('||');
+                if (!groups[groupKey]) {
+                    groups[groupKey] = { rows: [], groupValues: {} };
+                    groupCols.forEach(col => {
+                        const actualColName = Object.keys(row).find(k => k.toLowerCase() === col);
+                        groups[groupKey].groupValues[actualColName] = row[actualColName];
+                    });
+                }
+                groups[groupKey].rows.push(row);
+            });
+            
+            processedData = Object.values(groups).map(group => {
+                const aggregatedRow = { ...group.groupValues };
+                selectedColumnsAndAliases.forEach(({ expression, alias, isAggregate, aggFunc, aggCol }) => {
+                    if (isAggregate) {
+                        aggregatedRow[alias] = applyAggregate(aggFunc, aggCol, group.rows, data[0]);
+                    } else {
+                        // If it's a non-aggregated column, it should be one of the groupValues already.
+                        // If not, it's an error in SQL, but our parser is simple.
+                        // We ensure it's at least present from groupValues or it might be undefined.
+                        const actualExprColName = Object.keys(group.groupValues).find(k => k.toLowerCase() === expression.toLowerCase());
+                        if (actualExprColName) {
+                             aggregatedRow[alias] = group.groupValues[actualExprColName];
+                        }
+                    }
+                });
+                return aggregatedRow;
+            });
+
+        } else if (isAggregated) { 
+            const singleAggregatedRow = {};
+            selectedColumnsAndAliases.forEach(({ alias, isAggregate, aggFunc, aggCol, expression }) => {
+                if (isAggregate) {
+                    singleAggregatedRow[alias] = applyAggregate(aggFunc, aggCol, processedData, data[0]);
+                } else {
+                    throw new Error(`Column '${expression}' must appear in the GROUP BY clause or be used in an aggregate function when other aggregate functions are present.`);
+                }
+            });
+            processedData = [singleAggregatedRow];
+        }
+
+
+        if (havingClause) {
+            if (!groupByClause && !isAggregated) throw new Error("HAVING clause requires GROUP BY or aggregate functions.");
+            processedData = processedData.filter(row => evaluateCondition(havingClause, row, processedData[0] || data[0], true));
+        }
+
+        if (orderByClause) {
+            const [sortColRaw, sortDirRaw = 'ASC'] = orderByClause.split(/\s+/);
+            const sortDir = sortDirRaw.toUpperCase();
+            
+            processedData.sort((a, b) => {
+                const colAliasMatch = selectedColumnsAndAliases.find(sc => sc.alias.toLowerCase() === sortColRaw.toLowerCase());
+                const sortKey = colAliasMatch ? colAliasMatch.alias : Object.keys(a).find(k => k.toLowerCase() === sortColRaw.toLowerCase()) || sortColRaw;
+
+
+                if (!a.hasOwnProperty(sortKey) || !b.hasOwnProperty(sortKey)) {
+                     console.warn(`ORDER BY column or alias '${sortKey}' not found in processed data. Sorting may be incorrect.`);
+                     return 0;
+                }
+
+                const valA = a[sortKey];
+                const valB = b[sortKey];
+
+                if (valA === null || valA === undefined) return sortDir === 'ASC' ? -1 : 1;
+                if (valB === null || valB === undefined) return sortDir === 'ASC' ? 1 : -1;
+
+
+                if (typeof valA === 'string' && typeof valB === 'string') {
+                    return sortDir === 'ASC' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                if (valA < valB) return sortDir === 'ASC' ? -1 : 1;
+                if (valA > valB) return sortDir === 'ASC' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        if (limitClause) {
+            const limitNum = parseInt(limitClause, 10);
+            if (isNaN(limitNum) || limitNum < 0) throw new Error("Invalid LIMIT value.");
+            processedData = processedData.slice(0, limitNum);
+        }
+
+        // Final projection based on selectedColumnsAndAliases
+        processedData = processedData.map(row => {
+            const resultRow = {};
+            selectedColumnsAndAliases.forEach(({ expression, alias, isAggregate }) => {
+                if (isAggregate || groupByClause) { // If aggregated or grouped, the row already has the aliased values
+                    resultRow[alias] = row[alias];
+                } else { // Simple select from original (filtered) data
+                    const actualColName = Object.keys(row).find(k => k.toLowerCase() === expression.toLowerCase());
+                    if (actualColName) {
+                       resultRow[alias] = row[actualColName];
+                    } else if (expression === '*') { // Should have been expanded by parseSelectColumns
+                        Object.assign(resultRow, row); // Copy all if somehow * is still here
+                    }
+                }
+            });
+            // If SELECT * was used, selectedColumnsAndAliases will contain all original columns.
+            // Need to handle the case where SELECT * is used with GROUP BY - only group by cols and aggregates are valid.
+            // The current logic for `processedData = Object.values(groups).map(...)` handles this for GROUP BY.
+            return resultRow;
+        });
+
+
+        return processedData;
+    }
+    
+    function parseSelectColumns(selectClause, sampleRow) {
+        const columns = [];
+        const parts = selectClause.split(',').map(p => p.trim());
+        const sampleRowKeys = sampleRow ? Object.keys(sampleRow).map(k => k.toLowerCase()) : [];
+
+        if (selectClause.trim() === '*') {
+            if (!sampleRow) throw new Error("Cannot use SELECT * on an empty or undefined table structure.");
+            return Object.keys(sampleRow).map(colName => ({expression: colName, alias: colName, isAggregate: false}));
+        }
+
+        parts.forEach(part => {
+            const aliasMatch = part.match(/(.+)\s+AS\s+([a-zA-Z0-9_]+)$/i);
+            let expression, alias;
+            if (aliasMatch) {
+                expression = aliasMatch[1].trim();
+                alias = aliasMatch[2].trim();
+            } else {
+                expression = part;
+                alias = expression.replace(/\(.*\)/, '').split('.').pop(); // Simplistic alias from "COUNT(ColumnName)" -> "COUNT" or "TableName.ColumnName" -> "ColumnName"
+                if (expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)$/i)) { // Handle spaces in aggregate
+                    alias = expression; // Default alias for aggregates
+                }
+            }
+            
+            const aggMatch = expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)$/i); // Allow spaces
+            if (aggMatch) {
+                const aggFunc = aggMatch[1].toUpperCase();
+                let aggCol = aggMatch[2].trim();
+                if (aggCol === '*' && aggFunc === 'COUNT') {
+                    // Valid
+                } else if (aggCol !== '*' && sampleRow && !sampleRowKeys.includes(aggCol.toLowerCase())) {
+                    throw new Error(`Column '${aggCol}' inside ${aggFunc}() not found.`);
+                } else if (aggCol === '*' && aggFunc !== 'COUNT') {
+                    throw new Error(`'*' can only be used with COUNT aggregate function.`);
+                }
+                columns.push({ expression, alias, isAggregate: true, aggFunc, aggCol });
+            } else {
+                if (sampleRow && !sampleRowKeys.includes(expression.toLowerCase())) {
+                    throw new Error(`Column '${expression}' in SELECT list not found.`);
+                }
+                 // Find actual case for expression if it's a direct column name
+                const actualExpressionName = sampleRow ? (Object.keys(sampleRow).find(k => k.toLowerCase() === expression.toLowerCase()) || expression) : expression;
+                columns.push({ expression: actualExpressionName, alias, isAggregate: false });
+            }
+        });
+        return columns;
+    }
+
+    function applyAggregate(func, col, rows, sampleRow) {
+        const actualColName = col === '*' ? null : Object.keys(sampleRow).find(k => k.toLowerCase() === col.toLowerCase());
+
+        switch (func) {
+            case 'COUNT':
+                if (col === '*') return rows.length;
+                return rows.filter(r => r[actualColName] !== null && r[actualColName] !== undefined).length;
+            case 'SUM':
+                return rows.reduce((sum, r) => sum + (Number(r[actualColName]) || 0), 0);
+            case 'AVG':
+                const validRowsForAvg = rows.filter(r => r[actualColName] !== null && r[actualColName] !== undefined && !isNaN(Number(r[actualColName])));
+                if (validRowsForAvg.length === 0) return null;
+                return validRowsForAvg.reduce((sum, r) => sum + Number(r[actualColName]), 0) / validRowsForAvg.length;
+            case 'MIN':
+                const minVals = rows.map(r => r[actualColName]).filter(v => v !== null && v !== undefined && !isNaN(Number(v)));
+                return minVals.length > 0 ? Math.min(...minVals.map(v => Number(v))) : null;
+            case 'MAX':
+                const maxVals = rows.map(r => r[actualColName]).filter(v => v !== null && v !== undefined && !isNaN(Number(v)));
+                return maxVals.length > 0 ? Math.max(...maxVals.map(v => Number(v))) : null;
+            default: throw new Error(`Unknown aggregate function: ${func}`);
+        }
+    }
+
+    function evaluateCondition(conditionString, row, sampleRow, isHavingContext = false) {
+        const orParts = conditionString.split(/\s+OR\s+/i);
+        for (const orPart of orParts) {
+            const andParts = orPart.split(/\s+AND\s+/i);
+            let andResult = true;
+            for (const andPart of andParts) {
+                let partToEvaluate = andPart.trim();
+                if (partToEvaluate.startsWith('(') && partToEvaluate.endsWith(')')) {
+                     partToEvaluate = partToEvaluate.substring(1, partToEvaluate.length - 1);
+                }
+
+                const match = partToEvaluate.match(/^(.*?)\s*(=|>|<|>=|<=|!=|<>|IS\s+NOT\s+NULL|IS\s+NULL|IN|NOT\s+IN|BETWEEN|LIKE|NOT\s+LIKE)\s*(.*)$/i);
+
+                if (!match) {
+                     console.warn("Could not parse condition part:", partToEvaluate);
+                     throw new Error(`Invalid condition format: "${partToEvaluate}".`);
+                }
+
+                let colExp = match[1].trim(); 
+                const op = match[2].trim().toUpperCase();
+                let valExp = match[3] ? match[3].trim() : ''; 
+
+                let colValue;
+                if (isHavingContext) {
+                    if (row.hasOwnProperty(colExp)) { // Check if colExp is an alias from SELECT
+                        colValue = row[colExp];
+                    } else { // If not an alias, try to parse as aggregate for HAVING
+                        const aggMatchForHaving = colExp.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(([^)]+)\)$/i);
+                        if (aggMatchForHaving){
+                            // This is complex: The row for HAVING already contains computed aggregates.
+                            // We need to match colExp (e.g. "COUNT(*)") to the key used in the row object.
+                            // Our parseSelectColumns uses the full agg string as alias if no explicit AS.
+                            colValue = row[colExp]; 
+                            if (colValue === undefined) throw new Error(`Aggregate expression '${colExp}' not found in grouped data for HAVING. Did you alias it in SELECT?`);
+                        } else {
+                             throw new Error(`Column or aggregate '${colExp}' not found for HAVING clause.`);
+                        }
+                    }
+                } else { 
+                    const actualColName = Object.keys(sampleRow).find(k => k.toLowerCase() === colExp.toLowerCase());
+                    if (!actualColName) throw new Error(`Column '${colExp}' not found in table.`);
+                    colValue = row[actualColName];
+                }
+
+
+                if (op === 'IS NULL') {
+                    if (!(colValue === null || colValue === undefined)) { andResult = false; break; }
+                } else if (op === 'IS NOT NULL') {
+                    if (colValue === null || colValue === undefined) { andResult = false; break; }
+                } else if (op === 'IN' || op === 'NOT IN') {
+                    if (!valExp.startsWith('(') || !valExp.endsWith(')')) throw new Error("IN operator requires a list in parentheses, e.g., IN ('A', 'B', 1).");
+                    const listItems = valExp.substring(1, valExp.length - 1).split(',')
+                                         .map(item => item.trim().replace(/^['"]|['"]$/g, '')); 
+                    
+                    let foundInList = false;
+                    for (const listItem of listItems) {
+                        if (typeof colValue === 'number' && !isNaN(Number(listItem)) && Number(colValue) === Number(listItem)) {
+                            foundInList = true; break;
+                        } else if (String(colValue).toLowerCase() === String(listItem).toLowerCase()) {
+                            foundInList = true; break;
+                        }
+                    }
+                    if (op === 'IN' && !foundInList) { andResult = false; break; }
+                    if (op === 'NOT IN' && foundInList) { andResult = false; break; }
+
+                } else if (op === 'BETWEEN') {
+                    const rangeParts = valExp.split(/\s+AND\s+/i);
+                    if (rangeParts.length !== 2) throw new Error("BETWEEN operator requires 'value1 AND value2'.");
+                    let val1 = rangeParts[0].trim().replace(/^['"]|['"]$/g, '');
+                    let val2 = rangeParts[1].trim().replace(/^['"]|['"]$/g, '');
+
+                    if (typeof colValue === 'number' || (colValue !== null && !isNaN(Number(colValue)))) {
+                        val1 = parseFloat(val1); val2 = parseFloat(val2);
+                        if (isNaN(val1) || isNaN(val2)) throw new Error("Invalid numeric range for BETWEEN.");
+                    }
+                    if (typeof val1 === 'number' && typeof val2 === 'number' && val1 > val2) {
+                        [val1, val2] = [val2, val1]; 
+                    }
+                    if (!((colValue >= val1 && colValue <= val2) || (typeof colValue === 'string' && colValue >= val1 && colValue <= val2))) { 
+                        andResult = false; break; 
+                    }
+
+                } else if (op === 'LIKE' || op === 'NOT LIKE') {
+                    if (colValue === null || colValue === undefined) {
+                         if (op === 'LIKE') { andResult = false; break; }
+                         if (op === 'NOT LIKE') { continue; } // Or andResult = true; break; depending on strictness
+                    }
+                    colValue = String(colValue);
+                    let pattern = valExp.replace(/^['"]|['"]$/g, '');
+                    const regexPattern = '^' + pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                                                    .replace(/%/g, '.*')
+                                                    .replace(/_/g, '.') + '$';
+                    const regex = new RegExp(regexPattern, 'i'); 
+                    const matchResult = regex.test(colValue);
+                    if (op === 'LIKE' && !matchResult) { andResult = false; break; }
+                    if (op === 'NOT LIKE' && matchResult) { andResult = false; break; }
+                } else {
+                    let compareVal = valExp.replace(/^['"]|['"]$/g, ''); 
+
+                    if (typeof colValue === 'number' || (colValue !== null && !isNaN(Number(colValue)))) { 
+                        compareVal = parseFloat(compareVal);
+                        if (isNaN(compareVal)) throw new Error(`Invalid numeric value '${valExp}' for comparison.`);
+                    } else if (colValue === null || colValue === undefined) {
+                         andResult = false; break;
+                    }
+
+                    let currentConditionResult = false;
+                    switch (op) {
+                        case '=': currentConditionResult = (colValue == compareVal); break;
+                        case '>': currentConditionResult = (colValue > compareVal); break;
+                        case '<': currentConditionResult = (colValue < compareVal); break;
+                        case '>=': currentConditionResult = (colValue >= compareVal); break;
+                        case '<=': currentConditionResult = (colValue <= compareVal); break;
+                        case '!=': case '<>': currentConditionResult = (colValue != compareVal); break;
+                        default: throw new Error(`Unsupported operator: '${op}'.`);
+                    }
+                    if (!currentConditionResult) { andResult = false; break; }
+                }
+            } 
+            if (andResult) return true; 
+        } 
+        return false; 
+    }
+
+
+    function displayResults(results, outputElement, messageElement) {
+        if (results.length === 0) {
+            messageElement.textContent = 'Query executed successfully. No rows returned.';
+            messageElement.className = 'sql-result-message mt-3 text-sm text-slate-600';
+            outputElement.innerHTML = '<p class="p-3 text-center text-slate-500 italic">No results to display.</p>';
+            return;
+        }
+        messageElement.textContent = `Query executed successfully. ${results.length} row(s) returned.`;
+        messageElement.className = 'sql-result-message mt-3 text-sm text-green-600';
+
+        const table = document.createElement('table');
+        table.className = 'w-full text-sm text-left text-slate-500';
+        
+        const thead = document.createElement('thead');
+        thead.className = 'text-xs text-slate-700 uppercase bg-slate-100 sticky top-0';
+        const headerRow = document.createElement('tr');
+        if (results[0]) { // Ensure there's at least one row to get keys from
+            Object.keys(results[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.scope = 'col';
+                th.className = 'px-4 py-2 md:px-6 md:py-3';
+                th.textContent = key;
+                headerRow.appendChild(th);
+            });
+        }
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        results.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'bg-white border-b hover:bg-slate-50';
+            if (results[0]) { // Ensure header keys are available
+                 Object.keys(results[0]).forEach(key => { // Iterate based on header keys for consistent column order
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-2 md:px-6 md:py-4';
+                    const val = row[key];
+                    td.textContent = (val === null || val === undefined) ? 'NULL' : val;
+                    tr.appendChild(td);
+                });
+            }
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        outputElement.appendChild(table);
+    }
+
+</script>
+</body>
+</html>
