@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SQL Guide (University Edition)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Visualization & Content Choices:
+        - Report Info: SQL concepts for university course/teaching management.
+        - Goal: A presentation aid to teach data literacy and the strategic value of SQL.
+        - Viz/Presentation: Structured content for a "Why, What, How" presentation. Interactive widgets for live demos. Added non-interactive "slide" pages for key concepts, including Excel vs. Database comparison.
+        - Interaction:
+            - Navigational buttons for presentation flow.
+            - Embedded "Try SQL" widgets for presenter-led demonstrations.
+            - A dedicated "Database Explorer" page with a dropdown to select and query multiple sample tables.
+            - Links to external sites for post-session resources.
+        - Justification: University-specific data makes it immediately applicable. The structure supports a strategic narrative. The Excel comparison and live explorer directly address audience context and needs.
+        - Library/Method: Vanilla JS for SQL widgets and navigation. Tailwind for styling.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. Chart.js/Plotly.js not needed. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .code-block {
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #1f2937; /* Tailwind gray-800 */
+            border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+        }
+        .code-block pre {
+            margin: 0;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* Tailwind slate-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* Tailwind slate-400 */
+        }
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+            border-radius: 0.375rem;
+        }
+        .join-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <nav class="w-full md:w-72 bg-sky-700 text-white p-4 md:p-6 space-y-1 shadow-lg">
+            <h1 class="text-2xl font-bold mb-6 border-b border-sky-500 pb-2">SQL Guide</h1>
+            <p class="text-xs uppercase text-sky-300 mt-3 mb-1 px-3 font-semibold">University Edition</p>
+            
+            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "Why": The Big Picture</p>
+            <button data-target="intro" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Introduction</button>
+            <button data-target="objectives" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Session Objectives</button>
+            <button data-target="db-vs-excel" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Database vs. Spreadsheet</button>
+            <button data-target="core-concepts" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">What is SQL's Role?</button>
+            
+            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "What": Guided Tour</p>
+            <button data-target="select-from" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SELECT & FROM</button>
+            <button data-target="where-clause" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">WHERE Clause</button>
+            <button data-target="order-by" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">ORDER BY Clause</button>
+            <button data-target="group-by" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">GROUP BY (Aggregating)</button>
+            <button data-target="joins-visual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Visualizing JOINs</button>
+
+            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">Live Exploration</p>
+            <button data-target="db-explorer" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Live Database Explorer</button>
+
+            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "How": The Payoff</p>
+            <button data-target="sql-vs-excel" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SQL vs. Excel</button>
+            <button data-target="data-question" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Anatomy of a Good Question</button>
+            <button data-target="benefits" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Benefits For You</button>
+            <button data-target="key-takeaways" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Key Takeaways</button>
+            <button data-target="next-steps" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Q&A and Closing</button>
+        </nav>
+
+        <main class="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto">
+            <section id="intro" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">The "Why": The Big Picture</h2>
+                <p class="text-lg leading-relaxed">Welcome! This session is about fostering data literacy and strategic thinking. Our goal is not to make everyone a technical SQL expert, but to empower you to ask better questions of our university data to improve teaching quality and course management.</p>
+                <p>Today, we'll explore how we can move from "I think..." to "The data shows..." by asking strategic questions. For example:</p>
+                <div class="bg-sky-100 border-l-4 border-sky-500 text-sky-700 p-4 rounded-md" role="alert">
+                    <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
+                        <li>"Which of our courses have the highest student satisfaction scores?"</li>
+                        <li>"What is the average enrolment for the Faculty of Science?"</li>
+                        <li>"Can we see a list of courses with fewer than 10 students enrolled, so we can review their viability?"</li>
+                        <li>"Are there any lecturers who consistently receive outstanding feedback across multiple courses?"</li>
+                    </ul>
+                </div>
+                <p class="text-md leading-relaxed">The bottleneck isn't always a lack of data; it's our ability to access and understand it. SQL is the key that unlocks the answers to these questions from our university's databases.</p>
+            </section>
+            
+            <section id="objectives" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Session Objectives</h2>
+                <p class="text-lg leading-relaxed">By the end of this session, you will be able to:</p>
+                <div class="mt-4 grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700">Understand the "What" and "Why"</h3>
+                        <ul class="list-disc list-inside mt-2 space-y-2 text-slate-600">
+                            <li>Recognize the types of strategic questions that can be answered with data.</li>
+                            <li>Understand the role of SQL as the language used to query databases.</li>
+                            <li>Appreciate the difference between raw data and actionable insights.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700">Formulate Better Questions</h3>
+                         <ul class="list-disc list-inside mt-2 space-y-2 text-slate-600">
+                            <li>Translate a business or administrative need into a clear, specific data request.</li>
+                            <li>Collaborate more effectively with technical and data analytics teams.</li>
+                            <li>Feel empowered to be more "data-curious" in your role.</li>
+                        </ul>
+                    </div>
+                </div>
+                 <p class="text-center mt-8 text-slate-500 italic">Our goal is to improve data literacy, not to memorize code.</p>
+            </section>
+
+            <section id="db-vs-excel" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Database vs. Spreadsheet</h2>
+                <p class="text-lg leading-relaxed">Many of us are familiar with Excel. A database takes the concept of organizing data a step further, especially when dealing with related but separate sets of information.</p>
+                <div class="mt-6 grid md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h3 class="text-xl font-semibold text-center text-red-700 mb-2">The Spreadsheet Approach</h3>
+                        <div class="bg-white p-3 rounded-lg shadow border border-red-200">
+                            <p class="text-sm text-center font-medium mb-2">One Giant Sheet</p>
+                            <p class="text-xs text-slate-600 text-center mb-2">To track everything, we might cram it all into one sheet. Notice the repeated student and course information. This is hard to maintain and prone to errors.</p>
+                            <div class="code-block text-xs"><pre>
+| EnrolID | StudentID | StudentName | CourseID | CourseName                | Grade |
+|---------|-----------|-------------|----------|---------------------------|-------|
+| 1       | S123      | John Smith  | CS101    | Intro to Computer Science | 85    |
+| 2       | S123      | John Smith  | BA202    | Marketing Principles      | 72    |
+| 3       | S456      | Jane Doe    | CS101    | Intro to Computer Science | 91    |
+                            </pre></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-center text-green-700 mb-2">The Database Approach</h3>
+                        <div class="bg-white p-3 rounded-lg shadow border border-green-200">
+                            <p class="text-sm text-center font-medium mb-2">Separate, Related Tables</p>
+                            <p class="text-xs text-slate-600 text-center mb-2">A database stores information in separate, logical tables. SQL then `JOIN`s them together when you ask a question. This is efficient, scalable, and ensures data integrity.</p>
+                            <div class="space-y-2">
+                                <div class="code-block text-xs"><pre>
+-- Students Table --
+| StudentID | StudentName | ... |
+|-----------|-------------|-----|
+| S123      | John Smith  | ... |
+| S456      | Jane Doe    | ... |
+                                </pre></div>
+                                <div class="code-block text-xs"><pre>
+-- Courses Table --
+| CourseID | CourseName                | ... |
+|----------|---------------------------|-----|
+| CS101    | Intro to Computer Science | ... |
+| BA202    | Marketing Principles      | ... |
+                                </pre></div>
+                                <div class="code-block text-xs"><pre>
+-- Enrolments Table (Links the two) --
+| EnrolID | StudentID | CourseID | Grade |
+|---------|-----------|----------|-------|
+| 1       | S123      | CS101    | 85    |
+| 2       | S123      | BA202    | 72    |
+| 3       | S456      | CS101    | 91    |
+                                </pre></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="core-concepts" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">What is SQL's Role?</h2>
+                <p class="text-lg leading-relaxed">At its heart, a database is a collection of structured tables. Think of it like a set of interconnected spreadsheets, but far more powerful and efficient.</p>
+                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-md mt-4">
+                    <p class="font-semibold text-amber-800">The Warehouse Analogy:</p>
+                    <p class="text-amber-700 mt-2">Imagine our university's data is a massive, perfectly organized warehouse of information. SQL is the universal language you use on the intercom to ask the warehouse robot to find, sort, and bring you exactly what you need.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-6 mb-2">The Building Blocks: Tables, Columns, and Rows</h3>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li><strong class="font-semibold">Table:</strong> A collection of related data (e.g., a `Students` table, a `Courses` table).</li>
+                        <li><strong class="font-semibold">Column (Field):</strong> A specific attribute (e.g., `CourseName`, `Faculty`, `AvgGrade`).</li>
+                        <li><strong class="font-semibold">Row (Record):</strong> A single entry in a table (e.g., the details for one specific course).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="select-from" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `SELECT` & `FROM`</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"A new administrator is joining the team and needs a basic list of all courses and their corresponding faculties to get familiar with our offerings."</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <p class="italic text-xl">"Can I see a list of all course names and the faculty they belong to?"</p>
+                    <p class="mt-4">In SQL, we'd say:</p>
+                    <ul class="list-decimal list-inside ml-4 my-2 space-y-1">
+                        <li><strong class="font-semibold">`SELECT`</strong> the columns `CourseName` and `Faculty`...</li>
+                        <li><strong class="font-semibold">`FROM`</strong> the `Courses` table.</li>
+                    </ul>
+                    <div class="code-block my-2"><pre>SELECT CourseName, Faculty FROM Courses;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, Faculty FROM Courses;"></textarea>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="where-clause" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `WHERE`</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"The Head of the Science faculty wants to see a list of all courses offered by their department to plan for the next academic year."</p>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <p class="italic text-xl">"Can you show me all the courses from the 'Science' faculty?"</p>
+                     <p class="mt-4">We just add a `WHERE` clause to our query to specify a condition:</p>
+                    <div class="code-block my-2"><pre>SELECT CourseName, CourseID FROM Courses WHERE Faculty = 'Science';</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, Faculty FROM Courses WHERE Faculty = 'Business';"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="order-by" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `ORDER BY`</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"To identify top-performing courses, a curriculum committee needs a list of all enrolments, sorted by the highest final grades."</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <p class="italic text-xl">"List all enrolments, ordered by the final grade from highest to lowest."</p>
+                    <div class="code-block my-2"><pre>SELECT CourseID, StudentID, FinalGrade FROM Enrolments ORDER BY FinalGrade DESC;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseID, SatisfactionScore FROM Enrolments ORDER BY SatisfactionScore DESC;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+            
+            <section id="group-by" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `GROUP BY` & Aggregates</h2>
+                 <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"The university wants to understand the teaching load of its staff and needs a report on how many courses each lecturer is responsible for."</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <p class="italic text-xl">"Can you count how many courses each lecturer teaches?"</p>
+                    <p class="mt-4">We use `GROUP BY` to create a group for each lecturer, and `COUNT(*)` to count the courses in each group.</p>
+                    <div class="code-block my-2"><pre>SELECT LecturerID, COUNT(*) AS NumberOfCourses
+FROM Courses
+GROUP BY LecturerID;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Faculty, COUNT(*) AS CoursesPerFaculty FROM Courses GROUP BY Faculty;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+            
+            <section id="joins-visual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Visualizing JOINs</h2>
+                <p class="text-lg leading-relaxed">Thinking of tables as circles can help visualize how JOINs work to combine related data.</p>
+                <div class="mt-6 grid md:grid-cols-2 gap-8 text-center">
+                    <div>
+                        <h3 class="font-semibold text-xl text-sky-700 mb-3">INNER JOIN</h3>
+                        <div class="flex justify-center items-center">
+                            <div class="join-circle bg-blue-200 border-2 border-blue-400 -mr-8 z-0">Courses</div>
+                            <div class="join-circle bg-green-200 border-2 border-green-400 z-10 shadow-lg">Lecturers</div>
+                        </div>
+                        <p class="mt-4 text-slate-600">Returns only the rows that have matching values in <strong class="font-medium">both</strong> tables. It's the intersection.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-xl text-sky-700 mb-3">LEFT JOIN</h3>
+                         <div class="flex justify-center items-center">
+                            <div class="join-circle bg-blue-300 border-2 border-blue-500 -mr-8 z-10 shadow-lg">Courses</div>
+                            <div class="join-circle bg-green-200 border-2 border-green-400 z-0">Lecturers</div>
+                        </div>
+                        <p class="mt-4 text-slate-600">Returns <strong class="font-medium">all</strong> rows from the left table (Courses), and the matched rows from the right table. If a course has no lecturer assigned, you get NULL.</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Conceptual Example</h3>
+                    <p class="italic text-xl">"Create a report showing each course name and the name of the lecturer who teaches it."</p>
+                    <div class="code-block my-1 text-xs"><pre>
+SELECT Courses.CourseName, Lecturers.LecturerName
+FROM Courses
+INNER JOIN Lecturers ON Courses.LecturerID = Lecturers.LecturerID;</pre></div>
+                </div>
+            </section>
+
+            <section id="db-explorer" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Live Database Explorer</h2>
+                <p class="text-lg leading-relaxed">Let's try to answer some of your questions live! Use the dropdown to view one of our sample tables, then write a query to explore it.</p>
+                
+                <div class="flex items-center space-x-2">
+                    <label for="table-selector" class="font-medium text-slate-700">Select a Table to View:</label>
+                    <select id="table-selector" class="p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="Courses">Courses</option>
+                        <option value="Lecturers">Lecturers</option>
+                        <option value="Enrolments">Enrolments</option>
+                    </select>
+                </div>
+
+                <div id="full-data-display" class="table-container my-4"></div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Dynamic">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Query Playground</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-32 resize-none" placeholder="Enter any query to run against the selected table above..."></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+            
+            <section id="sql-vs-excel" class="content-section space-y-6">
+                 <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL vs. Excel: The Right Tool for the Job</h2>
+                <p class="text-lg leading-relaxed">Excel is a fantastic tool, and so is SQL. The key is knowing when to use each. This isn't about one being "better," but about choosing the right tool for the task at hand.</p>
+                <div class="mt-6 grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow border-t-4 border-green-500">
+                        <h3 class="text-xl font-semibold text-green-700">Excel Shines For...</h3>
+                        <p class="text-sm text-slate-500 mt-1">The Digital Workbench</p>
+                        <ul class="list-disc list-inside mt-3 space-y-2 text-slate-600">
+                            <li>Quick, one-off analysis on smaller datasets.</li>
+                            <li>Creating visualizations and charts for reports.</li>
+                            <li>Manual data entry and manipulation.</li>
+                            <li>Financial modeling and "what-if" scenarios.</li>
+                            <li>When you need a self-contained file to email to someone.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow border-t-4 border-sky-500">
+                        <h3 class="text-xl font-semibold text-sky-700">SQL is Essential For...</h3>
+                        <p class="text-sm text-slate-500 mt-1">The Secure Data Warehouse</p>
+                         <ul class="list-disc list-inside mt-3 space-y-2 text-slate-600">
+                            <li>Handling massive datasets (millions or billions of rows).</li>
+                            <li>Complex questions that require joining multiple data sources (e.g., Students + Courses + Grades).</li>
+                            <li>Ensuring data integrity and providing a "single source of truth."</li>
+                            <li>Automating repeatable reports and feeding data to dashboards.</li>
+                            <li>Serving as the backend for applications and websites.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data-question" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Anatomy of a Good Data Question</h2>
+                <p class="text-lg leading-relaxed">A well-formed question contains the ingredients for a good query, saving time and leading to better insights.</p>
+                <div class="mt-4 bg-white p-6 rounded-lg shadow">
+                    <p class="italic text-xl text-center text-sky-700">"Show me the <strong class="text-teal-600">average grade</strong> and <strong class="text-teal-600">satisfaction score</strong> for each <strong class="text-indigo-600">lecturer</strong> in the <strong class="text-red-600">Humanities faculty</strong>, for courses with <strong class="text-red-600">more than 20 enrolments</strong>."</p>
+                    <div class="mt-6 border-t pt-4 grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <h4 class="font-semibold text-slate-700">Components of the Question:</h4>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><strong class="text-teal-600">Metrics:</strong> What do you want to measure? (AvgGrade, SatisfactionScore)</li>
+                                <li><strong class="text-indigo-600">Grouping:</strong> How do you want to summarize the data? (for each Lecturer)</li>
+                                <li><strong class="text-red-600">Filters:</strong> What specific subset of data are you interested in? (Humanities faculty, > 20 enrolments)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-700">Why it's a Good Question:</h4>
+                             <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li>It's specific and unambiguous.</li>
+                                <li>It defines the desired outcome clearly.</li>
+                                <li>It provides all the necessary context for a data analyst to write an accurate query quickly.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="benefits" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Benefits For You & Your Role</h2>
+                <p class="text-lg leading-relaxed">Embracing data literacy provides tangible benefits across the university.</p>
+                <div class="space-y-4 mt-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-semibold text-sky-700">For Managers & Department Heads</h4>
+                        <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                            <li>Formulate clearer data requests to your teams, saving time and getting better insights.</li>
+                            <li>Better understand the potential and limitations of the data you have.</li>
+                            <li>Lead your teams to be more "data-curious" and make more informed decisions about course viability, resource allocation, and curriculum development.</li>
+                            <li>Become a better strategic partner to the university's data and analytics teams.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-semibold text-sky-700">For Non-Data Colleagues (Admin, Coordinators)</h4>
+                        <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                            <li>Collaborate more effectively with data analysts.</li>
+                            <li>Gain a better understanding of how departmental strategy is informed by data.</li>
+                            <li>Feel empowered to think about what data might be useful for your own projects and day-to-day tasks.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white p-4 rounded-lg shadow">
+                        <h4 class="font-semibold text-sky-700">For Everyone</h4>
+                        <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                            <li><strong class="font-medium">Data Literacy is a critical professional skill.</strong> Understanding how to ask questions of data is valuable in any role. This session is a step towards that.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="key-takeaways" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Key Takeaways</h2>
+                <p class="text-lg leading-relaxed">Let's summarize the core ideas from our session today.</p>
+                <div class="mt-4 space-y-4">
+                    <div class="bg-sky-100 border-l-4 border-sky-500 p-4 rounded-md">
+                        <h3 class="font-semibold text-sky-800">1. Focus on the Question, Not the Code</h3>
+                        <p class="text-sky-700 mt-1">The most valuable skill is the ability to formulate a clear, specific, and actionable question. The SQL query is just the tool to get the answer.</p>
+                    </div>
+                    <div class="bg-sky-100 border-l-4 border-sky-500 p-4 rounded-md">
+                        <h3 class="font-semibold text-sky-800">2. Understand the Building Blocks</h3>
+                        <p class="text-sky-700 mt-1">Knowing the basic vocabulary (`SELECT`, `FROM`, `WHERE`, `GROUP BY`) helps you understand what's possible and communicate effectively with data experts.</p>
+                    </div>
+                    <div class="bg-sky-100 border-l-4 border-sky-500 p-4 rounded-md">
+                        <h3 class="font-semibold text-sky-800">3. Data Literacy is a Collaborative Skill</h3>
+                        <p class="text-sky-700 mt-1">This knowledge empowers you to be a better partner to your colleagues and the university's analytics teams, leading to faster, more relevant insights for everyone.</p>
+                    </div>
+                </div>
+            </section>
+
+
+            <section id="next-steps" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Q&A and Closing</h2>
+                 <p class="text-lg leading-relaxed">Now, let's open it up for questions. Feel free to ask not just about syntax, but about "What if we wanted to know X?" or "Could we combine data from Y and Z?"</p>
+                 <div class="bg-sky-100 border-l-4 border-sky-500 text-sky-700 p-6 rounded-md shadow mt-6">
+                    <h3 class="text-2xl font-medium mb-3">Thank You!</h3>
+                    <p>The goal today was not to memorize commands, but to understand the <strong class="font-semibold">power of asking the right questions.</strong></p>
+                </div>
+                <div class="mt-8">
+                    <h3 class="text-2xl font-medium text-sky-700 mb-3 mt-6">Continue Your Data Literacy Journey!</h3>
+                    <p class="mb-4">For those interested in exploring further, here are some excellent, free resources:</p>
+                    <ul class="space-y-3">
+                        <li><strong class="font-semibold">SQLBolt:</strong> <a href="https://sqlbolt.com/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">An excellent, interactive way to practice the concepts we saw today.</a></li>
+                         <li><strong class="font-semibold">W3Schools SQL Tutorial:</strong> <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">A fantastic, comprehensive reference for all SQL commands.</a></li>
+                         <li><strong class="font-semibold">SQLZOO:</strong> <a href="https://sqlzoo.net/wiki/SQL_Tutorial" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">Interactive tutorials with quizzes to test your knowledge.</a></li>
+                        <li><strong class="font-semibold">Fun Challenge - SQL Murder Mystery:</strong> <a href="https://mystery.knightlab.com/" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:text-sky-800 hover:underline">A fun game to apply your new logical thinking skills.</a></li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+    const datasets = {
+        "Courses": [
+            { "CourseID": "CS101", "CourseName": "Intro to Computer Science", "Faculty": "Science", "LecturerID": 101 },
+            { "CourseID": "BA202", "CourseName": "Marketing Principles", "Faculty": "Business", "LecturerID": 102 },
+            { "CourseID": "HU301", "CourseName": "Shakespearean Literature", "Faculty": "Humanities", "LecturerID": 103 },
+            { "CourseID": "SC210", "CourseName": "Organic Chemistry", "Faculty": "Science", "LecturerID": 104 },
+            { "CourseID": "CS305", "CourseName": "Data Structures & Algorithms", "Faculty": "Science", "LecturerID": 101 },
+            { "CourseID": "BA310", "CourseName": "Advanced Corporate Finance", "Faculty": "Business", "LecturerID": 105 },
+            { "CourseID": "HU105", "CourseName": "Intro to Philosophy", "Faculty": "Humanities", "LecturerID": null },
+            { "CourseID": "ED401", "CourseName": "Educational Psychology", "Faculty": "Education", "LecturerID": 106 },
+            { "CourseID": "BA101", "CourseName": "Intro to Accounting", "Faculty": "Business", "LecturerID": 102 },
+            { "CourseID": "SC115", "CourseName": "General Biology", "Faculty": "Science", "LecturerID": 104 }
+        ],
+        "Lecturers": [
+            { "LecturerID": 101, "LecturerName": "Dr. Turing", "Position": "Professor" },
+            { "LecturerID": 102, "LecturerName": "Prof. Ogilvy", "Position": "Associate Professor" },
+            { "LecturerID": 103, "LecturerName": "Dr. Austen", "Position": "Senior Lecturer" },
+            { "LecturerID": 104, "LecturerName": "Dr. Curie", "Position": "Professor" },
+            { "LecturerID": 105, "LecturerName": "Prof. Khan", "Position": "Professor" },
+            { "LecturerID": 106, "LecturerName": "Dr. Skinner", "Position": "Lecturer" }
+        ],
+        "Enrolments": [
+            { "EnrolmentID": 1, "CourseID": "CS101", "StudentID": "S123", "FinalGrade": 85, "SatisfactionScore": 4.5 },
+            { "EnrolmentID": 2, "CourseID": "BA202", "StudentID": "S123", "FinalGrade": 72, "SatisfactionScore": 4.2 },
+            { "EnrolmentID": 3, "CourseID": "CS101", "StudentID": "S456", "FinalGrade": 91, "SatisfactionScore": 4.8 },
+            { "EnrolmentID": 4, "CourseID": "HU301", "StudentID": "S789", "FinalGrade": 88, "SatisfactionScore": 4.9 },
+            { "EnrolmentID": 5, "CourseID": "SC210", "StudentID": "S123", "FinalGrade": 65, "SatisfactionScore": 3.9 },
+            { "EnrolmentID": 6, "CourseID": "SC210", "StudentID": "S456", "FinalGrade": 70, "SatisfactionScore": 4.0 },
+            { "EnrolmentID": 7, "CourseID": "CS305", "StudentID": "S789", "FinalGrade": 75, "SatisfactionScore": 4.4 },
+            { "EnrolmentID": 8, "CourseID": "BA101", "StudentID": "S789", "FinalGrade": 61, "SatisfactionScore": 3.5 },
+            { "EnrolmentID": 9, "CourseID": "ED401", "StudentID": "S456", "FinalGrade": 89, "SatisfactionScore": 5.0 },
+            { "EnrolmentID": 10, "CourseID": "CS101", "StudentID": "S999", "FinalGrade": 82, "SatisfactionScore": 4.6 }
+        ]
+    };
+
+    const navButtons = document.querySelectorAll('.nav-button');
+    const contentSections = document.querySelectorAll('.content-section');
+    const mainContentArea = document.querySelector('main');
+    const fullDataDisplayContainer = document.getElementById('full-data-display');
+    const tableSelector = document.getElementById('table-selector');
+
+    function displayFullDataTable(tableName) {
+        if (fullDataDisplayContainer) {
+            const table = document.createElement('table');
+            table.className = 'w-full text-sm text-left text-slate-500';
+            const thead = document.createElement('thead');
+            thead.className = 'text-xs text-slate-700 uppercase bg-slate-100 sticky top-0';
+            const headerRow = document.createElement('tr');
+            const data = datasets[tableName];
+            if (data && data.length > 0) {
+                Object.keys(data[0]).forEach(key => {
+                    const th = document.createElement('th');
+                    th.scope = 'col';
+                    th.className = 'px-4 py-2 md:px-6 md:py-3';
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+            }
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            if(data) {
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'bg-white border-b hover:bg-slate-50';
+                    Object.values(row).forEach(val => {
+                        const td = document.createElement('td');
+                        td.className = 'px-4 py-2 md:px-6 md:py-4';
+                        td.textContent = (val === null || val === undefined) ? 'NULL' : val;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            }
+            table.appendChild(tbody);
+            fullDataDisplayContainer.innerHTML = '';
+            fullDataDisplayContainer.appendChild(table);
+        }
+    }
+
+    function setActiveSection(targetId) {
+        contentSections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === targetId) {
+                section.classList.add('active');
+            }
+        });
+        navButtons.forEach(button => {
+            button.classList.remove('bg-sky-800', 'font-semibold');
+            if (button.dataset.target === targetId) {
+                button.classList.add('bg-sky-800', 'font-semibold');
+            }
+        });
+        mainContentArea.scrollTop = 0;
+
+        if (targetId === 'db-explorer' && tableSelector) {
+            displayFullDataTable(tableSelector.value);
+        }
+    }
+
+    if(tableSelector) {
+        tableSelector.addEventListener('change', (event) => {
+            displayFullDataTable(event.target.value);
+            // Also update the playground widget's context
+            const playgroundWidget = document.querySelector('#db-explorer .interactive-sql-widget');
+            if(playgroundWidget) {
+                playgroundWidget.dataset.tableName = event.target.value;
+            }
+        });
+    }
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setActiveSection(button.dataset.target);
+        });
+    });
+
+    if (navButtons.length > 0) {
+        setActiveSection(navButtons[0].dataset.target);
+    }
+
+    const interactiveWidgets = document.querySelectorAll('.interactive-sql-widget');
+
+    interactiveWidgets.forEach(widget => {
+        const queryInput = widget.querySelector('.sql-query-input');
+        const runButton = widget.querySelector('.run-sql-button');
+        const resultOutput = widget.querySelector('.sql-result-output');
+        const resultMessage = widget.querySelector('.sql-result-message');
+        
+        runButton.addEventListener('click', () => {
+            let tableName = widget.dataset.tableName;
+            // For the dynamic explorer, get the current table from the dropdown
+            if (tableName === 'Dynamic' && tableSelector) {
+                tableName = tableSelector.value;
+            }
+            const dataset = datasets[tableName];
+            
+            const query = queryInput.value.trim();
+            resultMessage.textContent = '';
+            resultOutput.innerHTML = '';
+
+            if (!query) {
+                resultMessage.textContent = 'Please enter an SQL query.';
+                resultMessage.className = 'sql-result-message mt-3 text-sm text-amber-600';
+                return;
+            }
+            if (!dataset) {
+                resultMessage.textContent = `Error: Dataset for table '${tableName}' not found.`;
+                resultMessage.className = 'sql-result-message mt-3 text-sm text-red-600';
+                return;
+            }
+
+            try {
+                const results = executeSimpleSQL(query, dataset, tableName);
+                displayResults(results, resultOutput, resultMessage);
+            } catch (error) {
+                resultMessage.textContent = `Error: ${error.message}`;
+                resultMessage.className = 'sql-result-message mt-3 text-sm text-red-600';
+                console.error("SQL Execution Error:", error);
+            }
+        });
+    });
+
+
+    function executeSimpleSQL(query, data, expectedTableName) {
+        query = query.replace(/\s+/g, ' ').trim().replace(/;$/, '');
+        
+        const selectFromMatch = query.match(/^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)/i);
+        if (!selectFromMatch) throw new Error("Invalid query. Must start with 'SELECT ... FROM TableName'.");
+        
+        let selectClause = selectFromMatch[1].trim();
+        const fromTable = selectFromMatch[2].trim();
+
+        if (fromTable.toLowerCase() !== expectedTableName.toLowerCase()) {
+            throw new Error(`Table '${fromTable}' not found. This demo supports querying the '${expectedTableName}' table.`);
+        }
+
+        let processedData = [...data.map(row => ({...row}))]; 
+
+        let whereClause = '';
+        let groupByClause = '';
+        let havingClause = '';
+        let orderByClause = '';
+        let limitClause = '';
+
+        let remainingQuery = query.substring(selectFromMatch[0].length).trim();
+
+        const clausesOrder = ["WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"];
+        const clausesRegex = {};
+        clausesOrder.forEach(clause => {
+            clausesRegex[clause] = new RegExp(`\\s+${clause}\\s+(.+?)(?=\\s+(?:${clausesOrder.filter(c => c !== clause).join('|')})|$)`, "i");
+        });
+        
+        if (remainingQuery.match(/\sWHERE\s/i)) {
+             const match = remainingQuery.match(clausesRegex["WHERE"]);
+             if (match) { whereClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sGROUP\sBY\s/i)) {
+             const match = remainingQuery.match(clausesRegex["GROUP BY"]);
+             if (match) { groupByClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sHAVING\s/i)) {
+             const match = remainingQuery.match(clausesRegex["HAVING"]);
+             if (match) { havingClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sORDER\sBY\s/i)) {
+             const match = remainingQuery.match(clausesRegex["ORDER BY"]);
+             if (match) { orderByClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+        if (remainingQuery.match(/\sLIMIT\s/i)) {
+             const match = remainingQuery.match(clausesRegex["LIMIT"]);
+             if (match) { limitClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        }
+
+        if (whereClause) {
+            processedData = processedData.filter(row => evaluateCondition(whereClause, row, data[0]));
+        }
+        
+        let isAggregated = /COUNT\(|SUM\(|AVG\(|MIN\(|MAX\(/i.test(selectClause);
+        const selectedColumnsAndAliases = parseSelectColumns(selectClause, data[0]);
+
+        if (groupByClause) {
+            if (!isAggregated && !selectedColumnsAndAliases.some(c => c.isAggregate)) {
+                const groupColsLower = groupByClause.split(',').map(c => c.trim().toLowerCase());
+                const selectedNonAggColsLower = selectedColumnsAndAliases.filter(c => !c.isAggregate).map(c => c.expression.toLowerCase());
+                if (!selectedNonAggColsLower.every(sc => groupColsLower.includes(sc))) {
+                    // Lenient check for this tool
+                }
+            }
+
+            const groupCols = groupByClause.split(',').map(c => c.trim().toLowerCase());
+            
+            if (data.length > 0) {
+                const firstRowKeys = Object.keys(data[0]).map(k => k.toLowerCase());
+                groupCols.forEach(gc => {
+                    if (!firstRowKeys.includes(gc)) throw new Error(`Column '${gc}' in GROUP BY not found.`);
+                });
+            }
+
+            const groups = {};
+            processedData.forEach(row => {
+                const groupKey = groupCols.map(col => row[Object.keys(row).find(k => k.toLowerCase() === col)] ?? 'NULL_GROUP_KEY').join('||');
+                if (!groups[groupKey]) {
+                    groups[groupKey] = { rows: [], groupValues: {} };
+                    groupCols.forEach(col => {
+                        const actualColName = Object.keys(row).find(k => k.toLowerCase() === col);
+                        groups[groupKey].groupValues[actualColName] = row[actualColName];
+                    });
+                }
+                groups[groupKey].rows.push(row);
+            });
+            
+            processedData = Object.values(groups).map(group => {
+                const aggregatedRow = { ...group.groupValues };
+                selectedColumnsAndAliases.forEach(({ expression, alias, isAggregate, aggFunc, aggCol }) => {
+                    if (isAggregate) {
+                        aggregatedRow[alias] = applyAggregate(aggFunc, aggCol, group.rows, data[0]);
+                    } else {
+                        const actualExprColName = Object.keys(group.groupValues).find(k => k.toLowerCase() === expression.toLowerCase());
+                        if (actualExprColName) {
+                             aggregatedRow[alias] = group.groupValues[actualExprColName];
+                        }
+                    }
+                });
+                return aggregatedRow;
+            });
+
+        } else if (isAggregated) { 
+            const singleAggregatedRow = {};
+            selectedColumnsAndAliases.forEach(({ alias, isAggregate, aggFunc, aggCol, expression }) => {
+                if (isAggregate) {
+                    singleAggregatedRow[alias] = applyAggregate(aggFunc, aggCol, processedData, data[0]);
+                } else {
+                    throw new Error(`Column '${expression}' must appear in the GROUP BY clause or be used in an aggregate function when other aggregate functions are present.`);
+                }
+            });
+            processedData = [singleAggregatedRow];
+        }
+
+
+        if (havingClause) {
+            if (!groupByClause && !isAggregated) throw new Error("HAVING clause requires GROUP BY or aggregate functions.");
+            processedData = processedData.filter(row => evaluateCondition(havingClause, row, processedData[0] || data[0], true));
+        }
+
+        if (orderByClause) {
+            const [sortColRaw, sortDirRaw = 'ASC'] = orderByClause.split(/\s+/);
+            const sortDir = sortDirRaw.toUpperCase();
+            
+            processedData.sort((a, b) => {
+                const colAliasMatch = selectedColumnsAndAliases.find(sc => sc.alias.toLowerCase() === sortColRaw.toLowerCase());
+                const sortKey = colAliasMatch ? colAliasMatch.alias : Object.keys(a).find(k => k.toLowerCase() === sortColRaw.toLowerCase()) || sortColRaw;
+
+
+                if (!a.hasOwnProperty(sortKey) || !b.hasOwnProperty(sortKey)) {
+                     console.warn(`ORDER BY column or alias '${sortKey}' not found in processed data. Sorting may be incorrect.`);
+                     return 0;
+                }
+
+                const valA = a[sortKey];
+                const valB = b[sortKey];
+
+                if (valA === null || valA === undefined) return sortDir === 'ASC' ? -1 : 1;
+                if (valB === null || valB === undefined) return sortDir === 'ASC' ? 1 : -1;
+
+
+                if (typeof valA === 'string' && typeof valB === 'string') {
+                    return sortDir === 'ASC' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                if (valA < valB) return sortDir === 'ASC' ? -1 : 1;
+                if (valA > valB) return sortDir === 'ASC' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        if (limitClause) {
+            const limitNum = parseInt(limitClause, 10);
+            if (isNaN(limitNum) || limitNum < 0) throw new Error("Invalid LIMIT value.");
+            processedData = processedData.slice(0, limitNum);
+        }
+
+        processedData = processedData.map(row => {
+            const resultRow = {};
+            selectedColumnsAndAliases.forEach(({ expression, alias, isAggregate }) => {
+                if (isAggregate || groupByClause) { 
+                    resultRow[alias] = row[alias];
+                } else { 
+                    const actualColName = Object.keys(row).find(k => k.toLowerCase() === expression.toLowerCase());
+                    if (actualColName) {
+                       resultRow[alias] = row[actualColName];
+                    } else if (expression === '*') {
+                        Object.assign(resultRow, row);
+                    }
+                }
+            });
+            return resultRow;
+        });
+
+
+        return processedData;
+    }
+    
+    function parseSelectColumns(selectClause, sampleRow) {
+        const columns = [];
+        const parts = selectClause.split(',').map(p => p.trim());
+        const sampleRowKeys = sampleRow ? Object.keys(sampleRow).map(k => k.toLowerCase()) : [];
+
+        if (selectClause.trim() === '*') {
+            if (!sampleRow) throw new Error("Cannot use SELECT * on an empty or undefined table structure.");
+            return Object.keys(sampleRow).map(colName => ({expression: colName, alias: colName, isAggregate: false}));
+        }
+
+        parts.forEach(part => {
+            const aliasMatch = part.match(/(.+)\s+AS\s+(['"`]?[a-zA-Z0-9_ ]+['"`]?)$/i);
+            let expression, alias;
+            if (aliasMatch) {
+                expression = aliasMatch[1].trim();
+                alias = aliasMatch[2].trim().replace(/['"`]/g, '');
+            } else {
+                expression = part;
+                alias = expression.replace(/\(.*\)/, '').split('.').pop();
+                if (expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)$/i)) {
+                    alias = expression;
+                }
+            }
+            
+            const aggMatch = expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)$/i);
+            if (aggMatch) {
+                const aggFunc = aggMatch[1].toUpperCase();
+                let aggCol = aggMatch[2].trim();
+                if (aggCol === '*' && aggFunc === 'COUNT') {
+                    // Valid
+                } else if (aggCol !== '*' && sampleRow && !sampleRowKeys.includes(aggCol.toLowerCase())) {
+                    throw new Error(`Column '${aggCol}' inside ${aggFunc}() not found.`);
+                } else if (aggCol === '*' && aggFunc !== 'COUNT') {
+                    throw new Error(`'*' can only be used with COUNT aggregate function.`);
+                }
+                columns.push({ expression, alias, isAggregate: true, aggFunc, aggCol });
+            } else {
+                if (sampleRow && !sampleRowKeys.includes(expression.toLowerCase())) {
+                    throw new Error(`Column '${expression}' in SELECT list not found.`);
+                }
+                const actualExpressionName = sampleRow ? (Object.keys(sampleRow).find(k => k.toLowerCase() === expression.toLowerCase()) || expression) : expression;
+                columns.push({ expression: actualExpressionName, alias, isAggregate: false });
+            }
+        });
+        return columns;
+    }
+
+    function applyAggregate(func, col, rows, sampleRow) {
+        const actualColName = col === '*' ? null : Object.keys(sampleRow).find(k => k.toLowerCase() === col.toLowerCase());
+
+        switch (func) {
+            case 'COUNT':
+                if (col === '*') return rows.length;
+                return rows.filter(r => r[actualColName] !== null && r[actualColName] !== undefined).length;
+            case 'SUM':
+                return rows.reduce((sum, r) => sum + (Number(r[actualColName]) || 0), 0);
+            case 'AVG':
+                const validRowsForAvg = rows.filter(r => r[actualColName] !== null && r[actualColName] !== undefined && !isNaN(Number(r[actualColName])));
+                if (validRowsForAvg.length === 0) return null;
+                return validRowsForAvg.reduce((sum, r) => sum + Number(r[actualColName]), 0) / validRowsForAvg.length;
+            case 'MIN':
+                const minVals = rows.map(r => r[actualColName]).filter(v => v !== null && v !== undefined && !isNaN(Number(v)));
+                return minVals.length > 0 ? Math.min(...minVals.map(v => Number(v))) : null;
+            case 'MAX':
+                const maxVals = rows.map(r => r[actualColName]).filter(v => v !== null && v !== undefined && !isNaN(Number(v)));
+                return maxVals.length > 0 ? Math.max(...maxVals.map(v => Number(v))) : null;
+            default: throw new Error(`Unknown aggregate function: ${func}`);
+        }
+    }
+
+    function evaluateCondition(conditionString, row, sampleRow, isHavingContext = false) {
+        const orParts = conditionString.split(/\s+OR\s+/i);
+        for (const orPart of orParts) {
+            const andParts = orPart.split(/\s+AND\s+/i);
+            let andResult = true;
+            for (const andPart of andParts) {
+                let partToEvaluate = andPart.trim();
+                if (partToEvaluate.startsWith('(') && partToEvaluate.endsWith(')')) {
+                     partToEvaluate = partToEvaluate.substring(1, partToEvaluate.length - 1);
+                }
+
+                const match = partToEvaluate.match(/^(.*?)\s*(=|>|<|>=|<=|!=|<>|IS\s+NOT\s+NULL|IS\s+NULL|IN|NOT\s+IN|BETWEEN|LIKE|NOT\s+LIKE)\s*(.*)$/i);
+
+                if (!match) {
+                     console.warn("Could not parse condition part:", partToEvaluate);
+                     throw new Error(`Invalid condition format: "${partToEvaluate}".`);
+                }
+
+                let colExp = match[1].trim(); 
+                const op = match[2].trim().toUpperCase();
+                let valExp = match[3] ? match[3].trim() : ''; 
+
+                let colValue;
+                if (isHavingContext) {
+                    if (row.hasOwnProperty(colExp)) {
+                        colValue = row[colExp];
+                    } else { 
+                        const aggMatchForHaving = colExp.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(([^)]+)\)$/i);
+                        if (aggMatchForHaving){
+                            colValue = row[colExp]; 
+                            if (colValue === undefined) throw new Error(`Aggregate expression '${colExp}' not found in grouped data for HAVING. Did you alias it in SELECT?`);
+                        } else {
+                             throw new Error(`Column or aggregate '${colExp}' not found for HAVING clause.`);
+                        }
+                    }
+                } else { 
+                    const actualColName = Object.keys(sampleRow).find(k => k.toLowerCase() === colExp.toLowerCase());
+                    if (!actualColName) throw new Error(`Column '${colExp}' not found in table.`);
+                    colValue = row[actualColName];
+                }
+
+
+                if (op === 'IS NULL') {
+                    if (!(colValue === null || colValue === undefined)) { andResult = false; break; }
+                } else if (op === 'IS NOT NULL') {
+                    if (colValue === null || colValue === undefined) { andResult = false; break; }
+                } else if (op === 'IN' || op === 'NOT IN') {
+                    if (!valExp.startsWith('(') || !valExp.endsWith(')')) throw new Error("IN operator requires a list in parentheses, e.g., IN ('A', 'B', 1).");
+                    const listItems = valExp.substring(1, valExp.length - 1).split(',')
+                                         .map(item => item.trim().replace(/^['"]|['"]$/g, '')); 
+                    
+                    let foundInList = false;
+                    for (const listItem of listItems) {
+                        if (typeof colValue === 'number' && !isNaN(Number(listItem)) && Number(colValue) === Number(listItem)) {
+                            foundInList = true; break;
+                        } else if (String(colValue).toLowerCase() === String(listItem).toLowerCase()) {
+                            foundInList = true; break;
+                        }
+                    }
+                    if (op === 'IN' && !foundInList) { andResult = false; break; }
+                    if (op === 'NOT IN' && foundInList) { andResult = false; break; }
+
+                } else if (op === 'BETWEEN') {
+                    const rangeParts = valExp.split(/\s+AND\s+/i);
+                    if (rangeParts.length !== 2) throw new Error("BETWEEN operator requires 'value1 AND value2'.");
+                    let val1 = rangeParts[0].trim().replace(/^['"]|['"]$/g, '');
+                    let val2 = rangeParts[1].trim().replace(/^['"]|['"]$/g, '');
+
+                    if (typeof colValue === 'number' || (colValue !== null && !isNaN(Number(colValue)))) {
+                        val1 = parseFloat(val1); val2 = parseFloat(val2);
+                        if (isNaN(val1) || isNaN(val2)) throw new Error("Invalid numeric range for BETWEEN.");
+                    }
+                    if (typeof val1 === 'number' && typeof val2 === 'number' && val1 > val2) {
+                        [val1, val2] = [val2, val1]; 
+                    }
+                    if (!((colValue >= val1 && colValue <= val2) || (typeof colValue === 'string' && colValue >= val1 && colValue <= val2))) { 
+                        andResult = false; break; 
+                    }
+
+                } else if (op === 'LIKE' || op === 'NOT LIKE') {
+                    if (colValue === null || colValue === undefined) {
+                         if (op === 'LIKE') { andResult = false; break; }
+                         if (op === 'NOT LIKE') { continue; }
+                    }
+                    colValue = String(colValue);
+                    let pattern = valExp.replace(/^['"]|['"]$/g, '');
+                    const regexPattern = '^' + pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                                                    .replace(/%/g, '.*')
+                                                    .replace(/_/g, '.') + '$';
+                    const regex = new RegExp(regexPattern, 'i'); 
+                    const matchResult = regex.test(colValue);
+                    if (op === 'LIKE' && !matchResult) { andResult = false; break; }
+                    if (op === 'NOT LIKE' && matchResult) { andResult = false; break; }
+                } else {
+                    let compareVal = valExp.replace(/^['"]|['"]$/g, ''); 
+
+                    if (typeof colValue === 'number' || (colValue !== null && !isNaN(Number(colValue)))) { 
+                        compareVal = parseFloat(compareVal);
+                        if (isNaN(compareVal)) throw new Error(`Invalid numeric value '${valExp}' for comparison.`);
+                    } else if (colValue === null || colValue === undefined) {
+                         andResult = false; break;
+                    }
+
+                    let currentConditionResult = false;
+                    switch (op) {
+                        case '=': currentConditionResult = (colValue == compareVal); break;
+                        case '>': currentConditionResult = (colValue > compareVal); break;
+                        case '<': currentConditionResult = (colValue < compareVal); break;
+                        case '>=': currentConditionResult = (colValue >= compareVal); break;
+                        case '<=': currentConditionResult = (colValue <= compareVal); break;
+                        case '!=': case '<>': currentConditionResult = (colValue != compareVal); break;
+                        default: throw new Error(`Unsupported operator: '${op}'.`);
+                    }
+                    if (!currentConditionResult) { andResult = false; break; }
+                }
+            } 
+            if (andResult) return true; 
+        } 
+        return false; 
+    }
+
+
+    function displayResults(results, outputElement, messageElement) {
+        if (results.length === 0) {
+            messageElement.textContent = 'Query executed successfully. No rows returned.';
+            messageElement.className = 'sql-result-message mt-3 text-sm text-slate-600';
+            outputElement.innerHTML = '<p class="p-3 text-center text-slate-500 italic">No results to display.</p>';
+            return;
+        }
+        messageElement.textContent = `Query executed successfully. ${results.length} row(s) returned.`;
+        messageElement.className = 'sql-result-message mt-3 text-sm text-green-600';
+
+        const table = document.createElement('table');
+        table.className = 'w-full text-sm text-left text-slate-500';
+        
+        const thead = document.createElement('thead');
+        thead.className = 'text-xs text-slate-700 uppercase bg-slate-100 sticky top-0';
+        const headerRow = document.createElement('tr');
+        if (results[0]) {
+            Object.keys(results[0]).forEach(key => {
+                const th = document.createElement('th');
+                th.scope = 'col';
+                th.className = 'px-4 py-2 md:px-6 md:py-3';
+                th.textContent = key;
+                headerRow.appendChild(th);
+            });
+        }
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        results.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'bg-white border-b hover:bg-slate-50';
+            if (results[0]) {
+                 Object.keys(results[0]).forEach(key => {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-2 md:px-6 md:py-4';
+                    const val = row[key];
+                    td.textContent = (val === null || val === undefined) ? 'NULL' : val;
+                    tr.appendChild(td);
+                });
+            }
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        outputElement.appendChild(table);
+    }
+
+</script>
+</body>
+</html>
