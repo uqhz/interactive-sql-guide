@@ -11,7 +11,7 @@
         - Viz/Presentation: Structured content for a "Why, What, How" presentation. Interactive widgets for live demos. Added non-interactive "slide" pages for key concepts, including Excel vs. Database comparison.
         - Interaction:
             - Navigational buttons for presentation flow.
-            - Embedded "Try SQL" widgets for presenter-led demonstrations.
+            - Embedded "Try SQL" widgets for presenter-led demonstrations, now with specific challenges for the audience.
             - A dedicated "Database Explorer" page with a dropdown to select and query multiple sample tables.
             - Links to external sites for post-session resources.
         - Justification: University-specific data makes it immediately applicable. The structure supports a strategic narrative. The Excel comparison and live explorer directly address audience context and needs.
@@ -83,16 +83,22 @@
             <button data-target="objectives" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Session Objectives</button>
             <button data-target="db-vs-excel" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Database vs. Spreadsheet</button>
             <button data-target="core-concepts" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">What is SQL's Role?</button>
+            <button data-target="db-explorer" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Live Database Explorer</button>
             
             <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "What": Guided Tour</p>
             <button data-target="select-from" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SELECT & FROM</button>
             <button data-target="where-clause" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">WHERE Clause</button>
             <button data-target="order-by" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">ORDER BY Clause</button>
-            <button data-target="group-by" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">GROUP BY (Aggregating)</button>
+            <button data-target="limit-clause" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">LIMIT Clause</button>
+            <button data-target="where-advanced" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">More Filtering</button>
+            <button data-target="null-handling" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Working with NULLs</button>
+            <button data-target="aliases" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Using Aliases (AS)</button>
+            <button data-target="aggregate-functions" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Aggregate Functions</button>
+            <button data-target="group-by" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Grouping Data (GROUP BY)</button>
+            <button data-target="having-clause" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Filtering Groups (HAVING)</button>
             <button data-target="joins-visual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Visualizing JOINs</button>
-
-            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">Live Exploration</p>
-            <button data-target="db-explorer" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Live Database Explorer</button>
+            <button data-target="union-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">UNION (Conceptual)</button>
+            <button data-target="subqueries-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Subqueries (Conceptual)</button>
 
             <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "How": The Payoff</p>
             <button data-target="sql-vs-excel" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SQL vs. Excel</button>
@@ -210,6 +216,31 @@
                     </ul>
                 </div>
             </section>
+            
+            <section id="db-explorer" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Live Database Explorer</h2>
+                <p class="text-lg leading-relaxed">Let's try to answer some of your questions live! Use the dropdown to view one of our sample tables, then write a query to explore it.</p>
+                
+                <div class="flex items-center space-x-2">
+                    <label for="table-selector" class="font-medium text-slate-700">Select a Table to View:</label>
+                    <select id="table-selector" class="p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="Courses">Courses</option>
+                        <option value="Lecturers">Lecturers</option>
+                        <option value="Enrolments">Enrolments</option>
+                    </select>
+                </div>
+
+                <div id="full-data-display" class="table-container my-4"></div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Dynamic">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Query Playground</h3>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-32 resize-none" placeholder="Enter any query to run against the selected table above..."></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
 
             <section id="select-from" class="content-section space-y-6">
                 <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `SELECT` & `FROM`</h2>
@@ -218,18 +249,14 @@
                     <p class="italic text-sky-700 mt-1">"A new administrator is joining the team and needs a basic list of all courses and their corresponding faculties to get familiar with our offerings."</p>
                 </div>
                 <div>
-                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"Can I see a list of all course names and the faculty they belong to?"</p>
-                    <p class="mt-4">In SQL, we'd say:</p>
-                    <ul class="list-decimal list-inside ml-4 my-2 space-y-1">
-                        <li><strong class="font-semibold">`SELECT`</strong> the columns `CourseName` and `Faculty`...</li>
-                        <li><strong class="font-semibold">`FROM`</strong> the `Courses` table.</li>
-                    </ul>
                     <div class="code-block my-2"><pre>SELECT CourseName, Faculty FROM Courses;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, Faculty FROM Courses;"></textarea>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below:</h3>
+                    <p class="mb-2 italic text-slate-600">"We need a contact list for all lecturers. Can you get the name and position of every lecturer?"</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT LecturerName, Position FROM Lecturers;"></textarea>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
@@ -245,14 +272,14 @@
                     <p class="italic text-sky-700 mt-1">"The Head of the Science faculty wants to see a list of all courses offered by their department to plan for the next academic year."</p>
                 </div>
                  <div>
-                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"Can you show me all the courses from the 'Science' faculty?"</p>
-                     <p class="mt-4">We just add a `WHERE` clause to our query to specify a condition:</p>
                     <div class="code-block my-2"><pre>SELECT CourseName, CourseID FROM Courses WHERE Faculty = 'Science';</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, Faculty FROM Courses WHERE Faculty = 'Business';"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"Which students achieved a high distinction? Find all enrolments with a final grade of 85 or higher."</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT * FROM Enrolments WHERE FinalGrade >= 85;"></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
@@ -268,13 +295,37 @@
                     <p class="italic text-sky-700 mt-1">"To identify top-performing courses, a curriculum committee needs a list of all enrolments, sorted by the highest final grades."</p>
                 </div>
                 <div>
-                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"List all enrolments, ordered by the final grade from highest to lowest."</p>
                     <div class="code-block my-2"><pre>SELECT CourseID, StudentID, FinalGrade FROM Enrolments ORDER BY FinalGrade DESC;</pre></div>
                 </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"Can you provide an alphabetical list of all our courses?"</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, Faculty FROM Courses ORDER BY CourseName ASC;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="limit-clause" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `LIMIT`</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"For a university awards ceremony, we need to identify the top 5 students with the highest satisfaction scores across all courses."</p>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
+                    <p class="italic text-xl">"Show me the top 5 highest satisfaction scores given by students."</p>
+                    <div class="code-block my-2"><pre>SELECT StudentID, CourseID, SatisfactionScore FROM Enrolments ORDER BY SatisfactionScore DESC LIMIT 5;</pre></div>
+                </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseID, SatisfactionScore FROM Enrolments ORDER BY SatisfactionScore DESC;"></textarea>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"We need to review the 3 courses with the lowest satisfaction scores. Can you find them?"</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseID, SatisfactionScore FROM Enrolments ORDER BY SatisfactionScore ASC LIMIT 3;"></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
@@ -283,14 +334,109 @@
                 </div>
             </section>
             
+            <section id="where-advanced" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: More Filtering</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"The quality assurance team needs to find courses that are either high-enrolment or highly-rated within the Science faculty for a case study."</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
+                    <p class="italic text-xl">"Find all Science courses with more than 100 students OR a satisfaction score above 4.5."</p>
+                    <div class="code-block my-2"><pre>-- This conceptual example requires a JOIN
+SELECT CourseName, Enrolments.FinalGrade 
+FROM Courses 
+JOIN Enrolments ON Courses.CourseID = Enrolments.CourseID 
+WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
+</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"Find all enrolments where the student received a grade between 70 and 80 (a credit)."</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT * FROM Enrolments WHERE FinalGrade BETWEEN 70 AND 80;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="null-handling" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: Working with NULLs</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"The scheduling department needs to identify all courses that do not yet have an assigned lecturer so they can fill the positions."</p>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
+                    <p class="italic text-xl">"Find all courses where the lecturer has not yet been assigned."</p>
+                    <div class="code-block my-2"><pre>SELECT CourseName, LecturerID FROM Courses WHERE LecturerID IS NULL;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"Now find all courses that *do* have a lecturer assigned."</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, LecturerID FROM Courses WHERE LecturerID IS NOT NULL;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="aliases" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: Using Aliases (AS)</h2>
+                <p class="text-lg leading-relaxed">Aliases (`AS`) give temporary, more readable names to columns in your query results, which is great for reports.</p>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Example</h3>
+                    <p>Renaming columns for a cleaner report:</p>
+                    <div class="code-block my-2"><pre>SELECT CourseName AS "Course Title", SatisfactionScore AS "Student Rating" FROM Enrolments;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Try Aliasing</h3>
+                    <p class="mb-2 italic text-slate-600">"Create a report from the `Courses` table showing the `CourseName` as "Course" and the `Faculty` as "Department"."</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName AS Course, Faculty AS Department FROM Courses;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
+            <section id="aggregate-functions" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: Aggregate Functions</h2>
+                <p class="text-lg leading-relaxed">Aggregate functions perform calculations on a set of values and return a single summary value (e.g., `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`).</p>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"The finance department needs to know the total number of enrolments across all courses for budget planning."</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question</h3>
+                     <p class="italic text-xl">"What is the total number of student enrolments across all listed courses?"</p>
+                    <div class="code-block my-2"><pre>SELECT SUM(FinalGrade) AS TotalGradePoints FROM Enrolments;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                     <p class="mb-2 italic text-slate-600">"What is the average final grade for all enrolments? Also, what are the lowest and highest grades achieved?"</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT AVG(FinalGrade), MIN(FinalGrade), MAX(FinalGrade) FROM Enrolments;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
             <section id="group-by" class="content-section space-y-6">
-                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `GROUP BY` & Aggregates</h2>
-                 <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `GROUP BY`</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
                     <p class="font-semibold text-sky-800">Scenario:</p>
                     <p class="italic text-sky-700 mt-1">"The university wants to understand the teaching load of its staff and needs a report on how many courses each lecturer is responsible for."</p>
                 </div>
                 <div>
-                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Question:</h3>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"Can you count how many courses each lecturer teaches?"</p>
                     <p class="mt-4">We use `GROUP BY` to create a group for each lecturer, and `COUNT(*)` to count the courses in each group.</p>
                     <div class="code-block my-2"><pre>SELECT LecturerID, COUNT(*) AS NumberOfCourses
@@ -298,7 +444,8 @@ FROM Courses
 GROUP BY LecturerID;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Live Demo</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"How many courses does each faculty offer?"</p>
                     <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Faculty, COUNT(*) AS CoursesPerFaculty FROM Courses GROUP BY Faculty;"></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
@@ -308,6 +455,35 @@ GROUP BY LecturerID;</pre></div>
                 </div>
             </section>
             
+            <section id="having-clause" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `HAVING`</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"To identify top-performing faculties, we need to find which ones have an average student satisfaction score above 4.2."</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
+                    <p class="italic text-xl">"Show me the faculties where the average student satisfaction is higher than 4.2."</p>
+                    <p class="mt-4">`WHERE` filters rows *before* grouping. To filter *after* grouping, we use `HAVING`.</p>
+                    <div class="code-block my-2"><pre>-- This conceptual example requires a JOIN
+SELECT Faculty, AVG(SatisfactionScore) AS AvgSatisfaction
+FROM Courses
+JOIN Enrolments ON Courses.CourseID = Enrolments.CourseID
+GROUP BY Faculty
+HAVING AVG(SatisfactionScore) > 4.2;</pre></div>
+                </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
+                    <p class="mb-2 italic text-slate-600">"Which lecturers are teaching more than one course?"</p>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT LecturerID, COUNT(*) AS NumCourses FROM Courses WHERE LecturerID IS NOT NULL GROUP BY LecturerID HAVING COUNT(*) > 1;"></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+            </section>
+
             <section id="joins-visual" class="content-section space-y-6">
                 <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Visualizing JOINs</h2>
                 <p class="text-lg leading-relaxed">Thinking of tables as circles can help visualize how JOINs work to combine related data.</p>
@@ -339,29 +515,30 @@ INNER JOIN Lecturers ON Courses.LecturerID = Lecturers.LecturerID;</pre></div>
                 </div>
             </section>
 
-            <section id="db-explorer" class="content-section space-y-6">
-                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Live Database Explorer</h2>
-                <p class="text-lg leading-relaxed">Let's try to answer some of your questions live! Use the dropdown to view one of our sample tables, then write a query to explore it.</p>
-                
-                <div class="flex items-center space-x-2">
-                    <label for="table-selector" class="font-medium text-slate-700">Select a Table to View:</label>
-                    <select id="table-selector" class="p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
-                        <option value="Courses">Courses</option>
-                        <option value="Lecturers">Lecturers</option>
-                        <option value="Enrolments">Enrolments</option>
-                    </select>
-                </div>
+            <section id="union-conceptual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `UNION` (Conceptual)</h2>
+                <p class="text-lg leading-relaxed">The `UNION` operator is used to combine the result-set of two or more `SELECT` statements. It stacks rows on top of each other, unlike JOINs which add columns.</p>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>The `SELECT` statements must have the same number of columns with similar data types.</li>
+                    <li><strong class="font-semibold">`UNION`</strong> removes duplicates; <strong class="font-semibold">`UNION ALL`</strong> includes them.</li>
+                </ul>
+                <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question</h3>
+                <p class="italic text-xl">"Create a single list of all university staff, including both lecturers and administrative staff from a separate table."</p>
+                <div class="code-block my-1 text-xs"><pre>SELECT LecturerName FROM Lecturers
+UNION
+SELECT StaffName FROM AdminStaff;</pre></div>
+            </section>
 
-                <div id="full-data-display" class="table-container my-4"></div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Dynamic">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Query Playground</h3>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-32 resize-none" placeholder="Enter any query to run against the selected table above..."></textarea>
-                     <div class="flex flex-wrap gap-2 mt-2">
-                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
-                    </div>
-                    <div class="sql-result-message mt-3 text-sm"></div>
-                    <div class="sql-result-output table-container mt-3"></div>
-                </div>
+            <section id="subqueries-conceptual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: Subqueries (Conceptual)</h2>
+                <p class="text-lg leading-relaxed">A subquery (or inner query) is a query embedded inside another SQL query. It's a powerful way to perform sequential logical steps.</p>
+                <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question</h3>
+                <p class="italic text-xl">"Find all enrolments with a satisfaction score higher than the university-wide average."</p>
+                <p>First, you need to find the average satisfaction score. Then, you find enrolments with a score higher than that number. A subquery does this in one step:</p>
+                <div class="code-block my-1 text-xs"><pre>
+SELECT CourseID, StudentID, SatisfactionScore
+FROM Enrolments
+WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre></div>
             </section>
             
             <section id="sql-vs-excel" class="content-section space-y-6">
@@ -595,7 +772,6 @@ INNER JOIN Lecturers ON Courses.LecturerID = Lecturers.LecturerID;</pre></div>
     if(tableSelector) {
         tableSelector.addEventListener('change', (event) => {
             displayFullDataTable(event.target.value);
-            // Also update the playground widget's context
             const playgroundWidget = document.querySelector('#db-explorer .interactive-sql-widget');
             if(playgroundWidget) {
                 playgroundWidget.dataset.tableName = event.target.value;
@@ -623,7 +799,6 @@ INNER JOIN Lecturers ON Courses.LecturerID = Lecturers.LecturerID;</pre></div>
         
         runButton.addEventListener('click', () => {
             let tableName = widget.dataset.tableName;
-            // For the dynamic explorer, get the current table from the dropdown
             if (tableName === 'Dynamic' && tableSelector) {
                 tableName = tableSelector.value;
             }
