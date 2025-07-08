@@ -8,7 +8,7 @@
     <!-- Visualization & Content Choices:
         - Report Info: SQL concepts for university course/teaching management.
         - Goal: A presentation aid to teach data literacy and the strategic value of SQL.
-        - Viz/Presentation: Structured content for a "Why, What, How" presentation. Interactive widgets for live demos. Added non-interactive "slide" pages for key concepts, including Excel vs. Database comparison and data type handling.
+        - Viz/Presentation: Structured content for a "Why, What, How" presentation. Interactive widgets for live demos. Added non-interactive "slide" pages for key concepts, including Excel vs. Database comparison.
         - Interaction:
             - Navigational buttons for presentation flow.
             - Embedded "Try SQL" widgets for presenter-led demonstrations, now with specific challenges for the audience.
@@ -74,7 +74,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
     <div class="flex flex-col md:flex-row min-h-screen">
-        <nav class="w-full md:w-72 bg-sky-700 text-white p-4 md:p-6 space-y-1 shadow-lg md:max-h-screen md:overflow-y-auto">
+        <nav class="w-full md:w-72 bg-sky-700 text-white p-4 md:p-6 space-y-1 shadow-lg">
             <h1 class="text-2xl font-bold mb-6 border-b border-sky-500 pb-2">SQL Guide</h1>
             <p class="text-xs uppercase text-sky-300 mt-3 mb-1 px-3 font-semibold">University Edition</p>
             
@@ -102,11 +102,6 @@
             <button data-target="union-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">UNION (Conceptual)</button>
             <button data-target="subqueries-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Subqueries (Conceptual)</button>
 
-            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">SQL Tips & Tricks</p>
-            <button data-target="tips-text" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Handling Text Data</button>
-            <button data-target="tips-numeric" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Handling Numeric Data</button>
-            <button data-target="tips-dates" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Handling Dates & Times</button>
-
             <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "How": The Payoff</p>
             <button data-target="sql-vs-excel" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SQL vs. Excel</button>
             <button data-target="data-question" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Anatomy of a Good Question</button>
@@ -118,7 +113,7 @@
         <main class="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto">
             <section id="intro" class="content-section space-y-6">
                 <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">The "Why": The Big Picture</h2>
-                <p class="text-lg leading-relaxed">Welcome! This session is about fostering data literacy and strategic thinking. Our goal is not to make everyone a technical SQL expert, but to empower you to ask better questions.</p>
+                <p class="text-lg leading-relaxed">Welcome! This session is about fostering data literacy and strategic thinking. Our goal is not to make everyone a technical SQL expert, but to empower you to ask better questions of our university data to improve teaching quality and course management.</p>
                 <p>Today, we'll explore how we can move from "I think..." to "The data shows..." by asking strategic questions. For example:</p>
                 <div class="bg-sky-100 border-l-4 border-sky-500 text-sky-700 p-4 rounded-md" role="alert">
                     <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
@@ -263,7 +258,7 @@
                     <p class="italic text-xl">"Can I see a list of all course names and the faculty they belong to?"</p>
                     <div class="code-block my-2"><pre>SELECT CourseName, Faculty FROM Courses;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"We need a contact list for all lecturers. Can you get the name and position of every lecturer?"</li>
@@ -291,7 +286,7 @@
                     <p class="italic text-xl">"Can you show me all the courses from the 'Science' faculty?"</p>
                     <div class="code-block my-2"><pre>SELECT CourseName, CourseID FROM Courses WHERE Faculty = 'Science';</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                      <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Which students achieved a high distinction? Find all grades with a final grade of 85 or higher."</li>
@@ -319,7 +314,7 @@
                     <p class="italic text-xl">"List all enrolments, ordered by the final grade from highest to lowest."</p>
                     <div class="code-block my-2"><pre>SELECT EnrolmentID, FinalGrade FROM Grades ORDER BY FinalGrade DESC;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Can you provide an alphabetical list of all our courses?"</li>
@@ -347,7 +342,7 @@
                     <p class="italic text-xl">"Show me the top 5 highest satisfaction scores given by students."</p>
                     <div class="code-block my-2"><pre>SELECT EnrolmentID, SatisfactionScore FROM Evaluations ORDER BY SatisfactionScore DESC LIMIT 5;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                      <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"We need to review the 3 courses with the lowest satisfaction scores. Find the 3 lowest scores from the `Evaluations` table."</li>
@@ -380,7 +375,7 @@ JOIN Enrolments ON Courses.CourseID = Enrolments.CourseID
 WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
 </pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Find all grades where the student received a grade between 70 and 80 (a credit)."</li>
@@ -408,7 +403,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                     <p class="italic text-xl">"Find all courses where the lecturer has not yet been assigned."</p>
                     <div class="code-block my-2"><pre>SELECT CourseName, LecturerID FROM Courses WHERE LecturerID IS NULL;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Find all courses that *do* have a lecturer assigned."</li>
@@ -433,7 +428,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                     <p>Renaming columns for a cleaner report:</p>
                     <div class="code-block my-2"><pre>SELECT CourseName AS "Course Title", Faculty AS "Department" FROM Courses;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Try Aliasing</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"From the `Grades` table, display the `FinalGrade` as 'Student Mark'."</li>
@@ -462,7 +457,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                      <p class="italic text-xl">"What is the total number of student enrolments across all listed courses?"</p>
                     <div class="code-block my-2"><pre>SELECT COUNT(*) AS TotalEnrolments FROM Enrolments;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                      <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"What is the average final grade for all enrolments?"</li>
@@ -493,11 +488,11 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
 FROM Courses
 GROUP BY LecturerID;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"From the `Courses` table, how many courses does each faculty offer?"</li>
-                        <li class="italic">"What is the average final grade for each course? (Use the `Enrolments` and `Grades` tables conceptually, or query `Grades` grouped by `EnrolmentID` for a simpler version)."</li>
+                        <li class="italic">"What is the average final grade for each course? (Use `Grades` table, group by `CourseID`)."</li>
                         <li class="italic">"Find the average satisfaction score for each course from the `Evaluations` table."</li>
                     </ul>
                     <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
@@ -528,7 +523,7 @@ JOIN Evaluations ON Enrolments.EnrolmentID = Evaluations.EnrolmentID
 GROUP BY Faculty
 HAVING AVG(SatisfactionScore) > 4.2;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white">
                     <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Which lecturers are teaching more than one course?"</li>
@@ -614,7 +609,7 @@ FROM Courses
 INNER JOIN Lecturers ON Courses.LecturerID = Lecturers.LecturerID;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="JOIN">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"List all courses from the `Courses` table, and if they have a lecturer, show the lecturer's name. Make sure all courses appear, even if their lecturer is unknown." (Hint: Use a `LEFT JOIN`).</li>
                         <li class="italic">"Show the names of all 'Professor' rank lecturers and the names of the courses they teach."</li>
@@ -650,84 +645,9 @@ SELECT StaffName FROM AdminStaff;</pre></div>
                 <p class="italic text-xl">"Find all enrolments with a satisfaction score higher than the university-wide average."</p>
                 <p>First, you need to find the average satisfaction score. Then, you find enrolments with a score higher than that number. A subquery does this in one step:</p>
                 <div class="code-block my-1 text-xs"><pre>
-SELECT EnrolmentID, SatisfactionScore
-FROM Evaluations
+SELECT CourseID, StudentID, SatisfactionScore
+FROM Enrolments
 WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Evaluations);</pre></div>
-            </section>
-
-            <section id="tips-text" class="content-section space-y-6">
-                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL Tips: Handling Text Data</h2>
-                <p class="text-lg leading-relaxed">Working with text (often called strings) is very common. Here are the most important rules to remember.</p>
-                <div class="mt-4 space-y-4">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">1. Always Use Single Quotes</h3>
-                        <p class="text-slate-600">When you are filtering by a text value in a `WHERE` clause, you must enclose the value in single quotes (`'`). Double quotes are sometimes used for other purposes (like aliases with spaces) and numbers should never be in quotes.</p>
-                        <div class="code-block my-2"><pre>-- Correct
-SELECT * FROM Courses WHERE Faculty = 'Science';
-
--- Incorrect (will cause an error)
-SELECT * FROM Courses WHERE Faculty = Science;</pre></div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">2. Matches Must Be Exact (Including Case)</h3>
-                        <p class="text-slate-600">Standard SQL comparisons (`=`) are typically case-sensitive. This means `'Science'` is different from `'science'`. Some database systems can be configured to be case-insensitive, but it's best practice to assume sensitivity.</p>
-                         <div class="code-block my-2"><pre>-- This will find 'Science' but NOT 'science'
-SELECT * FROM Courses WHERE Faculty = 'Science';</pre></div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">3. Use `LIKE` for Pattern Matching</h3>
-                        <p class="text-slate-600">If you don't know the exact text, use the `LIKE` operator with wildcards. The percent sign (`%`) is the most common wildcard, matching any sequence of characters.</p>
-                         <div class="code-block my-2"><pre>-- Find any course that contains the word 'Intro'
-SELECT * FROM Courses WHERE CourseName LIKE '%Intro%';</pre></div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tips-numeric" class="content-section space-y-6">
-                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL Tips: Handling Numeric Data</h2>
-                <p class="text-lg leading-relaxed">Numeric data includes integers (whole numbers) and decimals/floats (numbers with fractional parts).</p>
-                <div class="mt-4 space-y-4">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">1. Do Not Use Quotes</h3>
-                        <p class="text-slate-600">When filtering by a number, you write the number directly without any quotes. Putting a number in quotes treats it as text, which can lead to unexpected results or errors.</p>
-                        <div class="code-block my-2"><pre>-- Correct
-SELECT * FROM Grades WHERE FinalGrade > 80;
-
--- Incorrect (may work, but bad practice)
-SELECT * FROM Grades WHERE FinalGrade > '80';</pre></div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">2. Integers vs. Decimals</h3>
-                        <p class="text-slate-600">SQL handles both whole numbers (like `LecturerID`) and numbers with decimal points (like `SatisfactionScore`). You can use standard mathematical comparison operators (`=`, `>`, `<`, etc.) on both types.</p>
-                         <div class="code-block my-2"><pre>-- Works on integers
-SELECT * FROM Courses WHERE LecturerID = 101;
-
--- Works on decimals
-SELECT * FROM Evaluations WHERE SatisfactionScore < 4.0;</pre></div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tips-dates" class="content-section space-y-6">
-                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL Tips: Handling Dates & Times</h2>
-                <p class="text-lg leading-relaxed">Working with dates is powerful but can be tricky. While our sample database doesn't have a date column, here are some key concepts for the real world.</p>
-                <div class="mt-4 space-y-4">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">1. Standard Format is Key</h3>
-                        <p class="text-slate-600">Dates are typically stored in a standard format, most commonly `YYYY-MM-DD` (e.g., `'2024-07-15'`). Like text, date values in a query must be enclosed in single quotes.</p>
-                        <div class="code-block my-2"><pre>SELECT * FROM Events WHERE EventDate = '2024-10-31';</pre></div>
-                    </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">2. Comparison Operators Work as Expected</h3>
-                        <p class="text-slate-600">You can use operators like `>`, `<`, and `BETWEEN` to find date ranges. The database understands the chronological order.</p>
-                         <div class="code-block my-2"><pre>-- Find all enrolments that happened in October 2024
-SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-31';</pre></div>
-                    </div>
-                     <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="font-semibold text-xl text-sky-700 mb-2">3. Use Functions for Complex Questions</h3>
-                        <p class="text-slate-600">For more advanced needs, like finding all events that happened on a Monday or extracting just the year from a date, every database has built-in date functions (e.g., `YEAR()`, `MONTH()`, `DAYOFWEEK()`). The exact function names vary between SQL databases (MySQL, SQL Server, etc.).</p>
-                    </div>
-                </div>
             </section>
             
             <section id="sql-vs-excel" class="content-section space-y-6">
@@ -1061,7 +981,6 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
             if (tableName === 'Dynamic' && mainExplorerSelector) {
                 tableName = mainExplorerSelector.value;
             }
-            const dataset = datasets[tableName];
             
             const query = queryInput.value.trim();
             resultMessage.textContent = '';
@@ -1072,12 +991,7 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
                 resultMessage.className = 'sql-result-message mt-3 text-sm text-amber-600';
                 return;
             }
-            if (!dataset && tableName !== 'JOIN') {
-                resultMessage.textContent = `Error: Dataset for table '${tableName}' not found.`;
-                resultMessage.className = 'sql-result-message mt-3 text-sm text-red-600';
-                return;
-            }
-
+            
             try {
                 const results = executeSimpleSQL(query, datasets, tableName);
                 displayResults(results, resultOutput, resultMessage);
@@ -1093,7 +1007,6 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
     function executeSimpleSQL(query, allData, defaultTableName) {
         query = query.replace(/\s+/g, ' ').trim().replace(/;$/, '');
         
-        // Handle JOINs
         const joinMatch = query.match(/FROM\s+([a-zA-Z0-9_]+)\s+(INNER|LEFT)\s+JOIN\s+([a-zA-Z0-9_]+)\s+ON\s+([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)\s*=\s*([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)/i);
 
         if (joinMatch) {
@@ -1111,9 +1024,7 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
             const [t1Alias, t1Col] = onCondition1.split('.');
             const [t2Alias, t2Col] = onCondition2.split('.');
             
-            // This simple parser assumes aliases match table names. A real one would parse aliases.
             if (t1Alias.toLowerCase() !== table1Name.toLowerCase() || t2Alias.toLowerCase() !== table2Name.toLowerCase()) {
-                 // Try swapping them
                  if (t1Alias.toLowerCase() !== table2Name.toLowerCase() || t2Alias.toLowerCase() !== table1Name.toLowerCase()) {
                     throw new Error("ON condition must use format TableName.ColumnName");
                  }
@@ -1136,7 +1047,6 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
                             joinedData.push({ ...row1, ...match });
                         });
                     } else {
-                        // Create a row with nulls for table2's columns
                         const nullRow2 = {};
                         Object.keys(table2[0]).forEach(key => nullRow2[key] = null);
                         joinedData.push({ ...row1, ...nullRow2 });
@@ -1144,8 +1054,6 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
                 });
             }
             
-            // For JOINs, the subsequent clauses would need to be applied to `joinedData`.
-            // This simplified parser will just return the joined data for projection.
             const selectClause = query.match(/^SELECT\s+(.+?)\s+FROM/i)[1].trim();
             const selectedColumns = parseSelectColumns(selectClause, joinedData[0] || null, allData);
             
@@ -1156,7 +1064,6 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
                     if (row.hasOwnProperty(colName)) {
                          resultRow[col.alias] = row[colName];
                     } else {
-                        // Fallback for simple names after join
                         resultRow[col.alias] = row[col.expression];
                     }
                 });
@@ -1164,16 +1071,15 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
             });
         }
         
-        // ---- SINGLE TABLE LOGIC ----
-        const data = allData[defaultTableName];
         const selectFromMatch = query.match(/^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)/i);
         if (!selectFromMatch) throw new Error("Invalid query. Must start with 'SELECT ... FROM TableName'.");
         
         let selectClause = selectFromMatch[1].trim();
         const fromTable = selectFromMatch[2].trim();
+        const data = allData[fromTable];
 
-        if (fromTable.toLowerCase() !== defaultTableName.toLowerCase()) {
-            throw new Error(`Table '${fromTable}' not found. This demo supports querying the '${defaultTableName}' table.`);
+        if (!data) {
+            throw new Error(`Table '${fromTable}' not found. Available tables are: ${Object.keys(allData).join(', ')}.`);
         }
 
         let processedData = [...data.map(row => ({...row}))]; 
@@ -1185,33 +1091,35 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
         let limitClause = '';
 
         let remainingQuery = query.substring(selectFromMatch[0].length).trim();
-
-        const clausesOrder = ["WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"];
-        const clausesRegex = {};
-        clausesOrder.forEach(clause => {
-            clausesRegex[clause] = new RegExp(`\\s+${clause}\\s+(.+?)(?=\\s+(?:${clausesOrder.filter(c => c !== clause).join('|')})|$)`, "i");
-        });
         
-        if (remainingQuery.match(/\sWHERE\s/i)) {
-             const match = remainingQuery.match(clausesRegex["WHERE"]);
-             if (match) { whereClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
+        const clauseOrder = ["WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"];
+        let clauses = {};
+        let tempQuery = ' ' + remainingQuery;
+
+        clauseOrder.forEach((clause, index) => {
+            const regex = new RegExp(`\\s${clause}\\s`, 'i');
+            const match = tempQuery.match(regex);
+            if (match) {
+                clauses[clause] = { index: match.index, name: clause };
+            }
+        });
+
+        const sortedClauses = Object.values(clauses).sort((a, b) => a.index - b.index);
+
+        for (let i = 0; i < sortedClauses.length; i++) {
+            const current = sortedClauses[i];
+            const next = sortedClauses[i + 1];
+            const startIndex = tempQuery.indexOf(current.name, current.index) + current.name.length;
+            const endIndex = next ? next.index : tempQuery.length;
+            const clauseContent = tempQuery.substring(startIndex, endIndex).trim();
+            
+            if (current.name === 'WHERE') whereClause = clauseContent;
+            if (current.name === 'GROUP BY') groupByClause = clauseContent;
+            if (current.name === 'HAVING') havingClause = clauseContent;
+            if (current.name === 'ORDER BY') orderByClause = clauseContent;
+            if (current.name === 'LIMIT') limitClause = clauseContent;
         }
-        if (remainingQuery.match(/\sGROUP\sBY\s/i)) {
-             const match = remainingQuery.match(clausesRegex["GROUP BY"]);
-             if (match) { groupByClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
-        }
-        if (remainingQuery.match(/\sHAVING\s/i)) {
-             const match = remainingQuery.match(clausesRegex["HAVING"]);
-             if (match) { havingClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
-        }
-        if (remainingQuery.match(/\sORDER\sBY\s/i)) {
-             const match = remainingQuery.match(clausesRegex["ORDER BY"]);
-             if (match) { orderByClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
-        }
-        if (remainingQuery.match(/\sLIMIT\s/i)) {
-             const match = remainingQuery.match(clausesRegex["LIMIT"]);
-             if (match) { limitClause = match[1].trim(); remainingQuery = remainingQuery.replace(match[0], '');}
-        }
+
 
         if (whereClause) {
             processedData = processedData.filter(row => evaluateCondition(whereClause, row, data[0]));
@@ -1221,14 +1129,6 @@ SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-3
         const selectedColumnsAndAliases = parseSelectColumns(selectClause, data[0]);
 
         if (groupByClause) {
-            if (!isAggregated && !selectedColumnsAndAliases.some(c => c.isAggregate)) {
-                const groupColsLower = groupByClause.split(',').map(c => c.trim().toLowerCase());
-                const selectedNonAggColsLower = selectedColumnsAndAliases.filter(c => !c.isAggregate).map(c => c.expression.toLowerCase());
-                if (!selectedNonAggColsLower.every(sc => groupColsLower.includes(sc))) {
-                    // Lenient check for this tool
-                }
-            }
-
             const groupCols = groupByClause.split(',').map(c => c.trim().toLowerCase());
             
             if (data.length > 0) {
