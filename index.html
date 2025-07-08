@@ -8,7 +8,7 @@
     <!-- Visualization & Content Choices:
         - Report Info: SQL concepts for university course/teaching management.
         - Goal: A presentation aid to teach data literacy and the strategic value of SQL.
-        - Viz/Presentation: Structured content for a "Why, What, How" presentation. Interactive widgets for live demos. Added non-interactive "slide" pages for key concepts, including Excel vs. Database comparison.
+        - Viz/Presentation: Structured content for a "Why, What, How" presentation. Interactive widgets for live demos. Added non-interactive "slide" pages for key concepts, including Excel vs. Database comparison and data type handling.
         - Interaction:
             - Navigational buttons for presentation flow.
             - Embedded "Try SQL" widgets for presenter-led demonstrations, now with specific challenges for the audience.
@@ -74,7 +74,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
     <div class="flex flex-col md:flex-row min-h-screen">
-        <nav class="w-full md:w-72 bg-sky-700 text-white p-4 md:p-6 space-y-1 shadow-lg">
+        <nav class="w-full md:w-72 bg-sky-700 text-white p-4 md:p-6 space-y-1 shadow-lg md:max-h-screen md:overflow-y-auto">
             <h1 class="text-2xl font-bold mb-6 border-b border-sky-500 pb-2">SQL Guide</h1>
             <p class="text-xs uppercase text-sky-300 mt-3 mb-1 px-3 font-semibold">University Edition</p>
             
@@ -102,6 +102,11 @@
             <button data-target="union-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">UNION (Conceptual)</button>
             <button data-target="subqueries-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Subqueries (Conceptual)</button>
 
+            <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">SQL Tips & Tricks</p>
+            <button data-target="tips-text" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Handling Text Data</button>
+            <button data-target="tips-numeric" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Handling Numeric Data</button>
+            <button data-target="tips-dates" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Handling Dates & Times</button>
+
             <p class="text-xs uppercase text-sky-300 mt-4 mb-1 px-3 font-semibold">The "How": The Payoff</p>
             <button data-target="sql-vs-excel" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">SQL vs. Excel</button>
             <button data-target="data-question" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Anatomy of a Good Question</button>
@@ -113,7 +118,7 @@
         <main class="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto">
             <section id="intro" class="content-section space-y-6">
                 <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">The "Why": The Big Picture</h2>
-                <p class="text-lg leading-relaxed">Welcome! This session is about fostering data literacy and strategic thinking. Our goal is not to make everyone a technical SQL expert, but to empower you to ask better questions of our university data to improve teaching quality and course management.</p>
+                <p class="text-lg leading-relaxed">Welcome! This session is about fostering data literacy and strategic thinking. Our goal is not to make everyone a technical SQL expert, but to empower you to ask better questions.</p>
                 <p>Today, we'll explore how we can move from "I think..." to "The data shows..." by asking strategic questions. For example:</p>
                 <div class="bg-sky-100 border-l-4 border-sky-500 text-sky-700 p-4 rounded-md" role="alert">
                     <ul class="list-disc list-inside ml-4 mt-2 space-y-1">
@@ -259,7 +264,7 @@
                     <div class="code-block my-2"><pre>SELECT CourseName, Faculty FROM Courses;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"We need a contact list for all lecturers. Can you get the name and position of every lecturer?"</li>
                         <li class="italic">"Show all information available in the `Students` table."</li>
@@ -287,7 +292,7 @@
                     <div class="code-block my-2"><pre>SELECT CourseName, CourseID FROM Courses WHERE Faculty = 'Science';</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                      <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Which students achieved a high distinction? Find all grades with a final grade of 85 or higher."</li>
                         <li class="italic">"Find the details of the course with the CourseID 'HU301'."</li>
@@ -315,7 +320,7 @@
                     <div class="code-block my-2"><pre>SELECT EnrolmentID, FinalGrade FROM Grades ORDER BY FinalGrade DESC;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Can you provide an alphabetical list of all our courses?"</li>
                         <li class="italic">"List all evaluations, ordered by their satisfaction score from lowest to highest."</li>
@@ -343,7 +348,7 @@
                     <div class="code-block my-2"><pre>SELECT EnrolmentID, SatisfactionScore FROM Evaluations ORDER BY SatisfactionScore DESC LIMIT 5;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                      <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"We need to review the 3 courses with the lowest satisfaction scores. Find the 3 lowest scores from the `Evaluations` table."</li>
                         <li class="italic">"Find the 5 most recent enrolments (highest EnrolmentID) from the `Enrolments` table."</li>
@@ -376,7 +381,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
 </pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Find all grades where the student received a grade between 70 and 80 (a credit)."</li>
                         <li class="italic">"List enrolments for course 'CS101' where the final grade was below 85."</li>
@@ -404,7 +409,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                     <div class="code-block my-2"><pre>SELECT CourseName, LecturerID FROM Courses WHERE LecturerID IS NULL;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Find all courses that *do* have a lecturer assigned."</li>
                         <li class="italic">"From the `Evaluations` table, find any records where the satisfaction score was not recorded."</li>
@@ -429,7 +434,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                     <div class="code-block my-2"><pre>SELECT CourseName AS "Course Title", Faculty AS "Department" FROM Courses;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try Aliasing</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Try Aliasing</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"From the `Grades` table, display the `FinalGrade` as 'Student Mark'."</li>
                         <li class="italic">"Show the `LecturerName` as 'Instructor' and `Position` as 'Job Title' from the `Lecturers` table."</li>
@@ -458,7 +463,7 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                     <div class="code-block my-2"><pre>SELECT COUNT(*) AS TotalEnrolments FROM Enrolments;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                      <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"What is the average final grade for all enrolments?"</li>
                         <li class="italic">"Find the lowest and highest satisfaction scores recorded in the `Evaluations` table."</li>
@@ -489,10 +494,10 @@ FROM Courses
 GROUP BY LecturerID;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"From the `Courses` table, how many courses does each faculty offer?"</li>
-                        <li class="italic">"What is the average final grade for each course? (Use the `Enrolments` and `Grades` tables conceptually, or query `Grades` grouped by `CourseID` for a simpler version)."</li>
+                        <li class="italic">"What is the average final grade for each course? (Use the `Enrolments` and `Grades` tables conceptually, or query `Grades` grouped by `EnrolmentID` for a simpler version)."</li>
                         <li class="italic">"Find the average satisfaction score for each course from the `Evaluations` table."</li>
                     </ul>
                     <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
@@ -524,7 +529,7 @@ GROUP BY Faculty
 HAVING AVG(SatisfactionScore) > 4.2;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Answer these Questions</h3>
                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
                         <li class="italic">"Which lecturers are teaching more than one course?"</li>
                         <li class="italic">"From the `Grades` table, show the courses where the average final grade is above 80."</li>
@@ -645,9 +650,84 @@ SELECT StaffName FROM AdminStaff;</pre></div>
                 <p class="italic text-xl">"Find all enrolments with a satisfaction score higher than the university-wide average."</p>
                 <p>First, you need to find the average satisfaction score. Then, you find enrolments with a score higher than that number. A subquery does this in one step:</p>
                 <div class="code-block my-1 text-xs"><pre>
-SELECT CourseID, StudentID, SatisfactionScore
-FROM Enrolments
+SELECT EnrolmentID, SatisfactionScore
+FROM Evaluations
 WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Evaluations);</pre></div>
+            </section>
+
+            <section id="tips-text" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL Tips: Handling Text Data</h2>
+                <p class="text-lg leading-relaxed">Working with text (often called strings) is very common. Here are the most important rules to remember.</p>
+                <div class="mt-4 space-y-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">1. Always Use Single Quotes</h3>
+                        <p class="text-slate-600">When you are filtering by a text value in a `WHERE` clause, you must enclose the value in single quotes (`'`). Double quotes are sometimes used for other purposes (like aliases with spaces) and numbers should never be in quotes.</p>
+                        <div class="code-block my-2"><pre>-- Correct
+SELECT * FROM Courses WHERE Faculty = 'Science';
+
+-- Incorrect (will cause an error)
+SELECT * FROM Courses WHERE Faculty = Science;</pre></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">2. Matches Must Be Exact (Including Case)</h3>
+                        <p class="text-slate-600">Standard SQL comparisons (`=`) are typically case-sensitive. This means `'Science'` is different from `'science'`. Some database systems can be configured to be case-insensitive, but it's best practice to assume sensitivity.</p>
+                         <div class="code-block my-2"><pre>-- This will find 'Science' but NOT 'science'
+SELECT * FROM Courses WHERE Faculty = 'Science';</pre></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">3. Use `LIKE` for Pattern Matching</h3>
+                        <p class="text-slate-600">If you don't know the exact text, use the `LIKE` operator with wildcards. The percent sign (`%`) is the most common wildcard, matching any sequence of characters.</p>
+                         <div class="code-block my-2"><pre>-- Find any course that contains the word 'Intro'
+SELECT * FROM Courses WHERE CourseName LIKE '%Intro%';</pre></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tips-numeric" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL Tips: Handling Numeric Data</h2>
+                <p class="text-lg leading-relaxed">Numeric data includes integers (whole numbers) and decimals/floats (numbers with fractional parts).</p>
+                <div class="mt-4 space-y-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">1. Do Not Use Quotes</h3>
+                        <p class="text-slate-600">When filtering by a number, you write the number directly without any quotes. Putting a number in quotes treats it as text, which can lead to unexpected results or errors.</p>
+                        <div class="code-block my-2"><pre>-- Correct
+SELECT * FROM Grades WHERE FinalGrade > 80;
+
+-- Incorrect (may work, but bad practice)
+SELECT * FROM Grades WHERE FinalGrade > '80';</pre></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">2. Integers vs. Decimals</h3>
+                        <p class="text-slate-600">SQL handles both whole numbers (like `LecturerID`) and numbers with decimal points (like `SatisfactionScore`). You can use standard mathematical comparison operators (`=`, `>`, `<`, etc.) on both types.</p>
+                         <div class="code-block my-2"><pre>-- Works on integers
+SELECT * FROM Courses WHERE LecturerID = 101;
+
+-- Works on decimals
+SELECT * FROM Evaluations WHERE SatisfactionScore < 4.0;</pre></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tips-dates" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">SQL Tips: Handling Dates & Times</h2>
+                <p class="text-lg leading-relaxed">Working with dates is powerful but can be tricky. While our sample database doesn't have a date column, here are some key concepts for the real world.</p>
+                <div class="mt-4 space-y-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">1. Standard Format is Key</h3>
+                        <p class="text-slate-600">Dates are typically stored in a standard format, most commonly `YYYY-MM-DD` (e.g., `'2024-07-15'`). Like text, date values in a query must be enclosed in single quotes.</p>
+                        <div class="code-block my-2"><pre>SELECT * FROM Events WHERE EventDate = '2024-10-31';</pre></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">2. Comparison Operators Work as Expected</h3>
+                        <p class="text-slate-600">You can use operators like `>`, `<`, and `BETWEEN` to find date ranges. The database understands the chronological order.</p>
+                         <div class="code-block my-2"><pre>-- Find all enrolments that happened in October 2024
+SELECT * FROM Enrolments WHERE EnrolmentDate BETWEEN '2024-10-01' AND '2024-10-31';</pre></div>
+                    </div>
+                     <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">3. Use Functions for Complex Questions</h3>
+                        <p class="text-slate-600">For more advanced needs, like finding all events that happened on a Monday or extracting just the year from a date, every database has built-in date functions (e.g., `YEAR()`, `MONTH()`, `DAYOFWEEK()`). The exact function names vary between SQL databases (MySQL, SQL Server, etc.).</p>
+                    </div>
+                </div>
             </section>
             
             <section id="sql-vs-excel" class="content-section space-y-6">
