@@ -13,7 +13,7 @@
             - Navigational buttons for presentation flow.
             - Embedded "Try SQL" widgets for presenter-led demonstrations, now with specific challenges for the audience.
             - A dedicated "Database Explorer" page with a dropdown to select and query multiple sample tables.
-            - Links to external sites for post-session resources.
+            - An embedded table explorer on each SQL function page for easy reference.
         - Justification: University-specific data makes it immediately applicable. The structure supports a strategic narrative. The Excel comparison and live explorer directly address audience context and needs.
         - Library/Method: Vanilla JS for SQL widgets and navigation. Tailwind for styling.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. Chart.js/Plotly.js not needed. -->
@@ -96,7 +96,9 @@
             <button data-target="aggregate-functions" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Aggregate Functions</button>
             <button data-target="group-by" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Grouping Data (GROUP BY)</button>
             <button data-target="having-clause" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Filtering Groups (HAVING)</button>
+            <button data-target="keys-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Understanding Keys</button>
             <button data-target="joins-visual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Visualizing JOINs</button>
+            <button data-target="joins-practice" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">JOINs in Action</button>
             <button data-target="union-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">UNION (Conceptual)</button>
             <button data-target="subqueries-conceptual" class="nav-button w-full text-left px-3 py-2 rounded-md hover:bg-sky-600 focus:bg-sky-600 transition-colors text-sm">Subqueries (Conceptual)</button>
 
@@ -226,7 +228,10 @@
                     <select id="table-selector" class="p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
                         <option value="Courses">Courses</option>
                         <option value="Lecturers">Lecturers</option>
+                        <option value="Students">Students</option>
                         <option value="Enrolments">Enrolments</option>
+                        <option value="Grades">Grades</option>
+                        <option value="Evaluations">Evaluations</option>
                     </select>
                 </div>
 
@@ -254,15 +259,20 @@
                     <div class="code-block my-2"><pre>SELECT CourseName, Faculty FROM Courses;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below:</h3>
-                    <p class="mb-2 italic text-slate-600">"We need a contact list for all lecturers. Can you get the name and position of every lecturer?"</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT LecturerName, Position FROM Lecturers;"></textarea>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"We need a contact list for all lecturers. Can you get the name and position of every lecturer?"</li>
+                        <li class="italic">"Show all information available in the `Students` table."</li>
+                        <li class="italic">"Display just the CourseID and Faculty for all courses."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="where-clause" class="content-section space-y-6">
@@ -276,16 +286,21 @@
                     <p class="italic text-xl">"Can you show me all the courses from the 'Science' faculty?"</p>
                     <div class="code-block my-2"><pre>SELECT CourseName, CourseID FROM Courses WHERE Faculty = 'Science';</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"Which students achieved a high distinction? Find all enrolments with a final grade of 85 or higher."</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT * FROM Enrolments WHERE FinalGrade >= 85;"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"Which students achieved a high distinction? Find all grades with a final grade of 85 or higher."</li>
+                        <li class="italic">"Find the details of the course with the CourseID 'HU301'."</li>
+                        <li class="italic">"Show all enrolments for the student with StudentID 'S789'."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="order-by" class="content-section space-y-6">
@@ -297,18 +312,23 @@
                 <div>
                     <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"List all enrolments, ordered by the final grade from highest to lowest."</p>
-                    <div class="code-block my-2"><pre>SELECT CourseID, StudentID, FinalGrade FROM Enrolments ORDER BY FinalGrade DESC;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT EnrolmentID, FinalGrade FROM Grades ORDER BY FinalGrade DESC;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"Can you provide an alphabetical list of all our courses?"</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, Faculty FROM Courses ORDER BY CourseName ASC;"></textarea>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"Can you provide an alphabetical list of all our courses?"</li>
+                        <li class="italic">"List all evaluations, ordered by their satisfaction score from lowest to highest."</li>
+                        <li class="italic">"Show all lecturers ordered alphabetically by their name."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="limit-clause" class="content-section space-y-6">
@@ -320,18 +340,23 @@
                  <div>
                     <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"Show me the top 5 highest satisfaction scores given by students."</p>
-                    <div class="code-block my-2"><pre>SELECT StudentID, CourseID, SatisfactionScore FROM Enrolments ORDER BY SatisfactionScore DESC LIMIT 5;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT EnrolmentID, SatisfactionScore FROM Evaluations ORDER BY SatisfactionScore DESC LIMIT 5;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"We need to review the 3 courses with the lowest satisfaction scores. Can you find them?"</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseID, SatisfactionScore FROM Enrolments ORDER BY SatisfactionScore ASC LIMIT 3;"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"We need to review the 3 courses with the lowest satisfaction scores. Find the 3 lowest scores from the `Evaluations` table."</li>
+                        <li class="italic">"Find the 5 most recent enrolments (highest EnrolmentID) from the `Enrolments` table."</li>
+                        <li class="italic">"Get any 4 courses from the `Courses` table."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
             
             <section id="where-advanced" class="content-section space-y-6">
@@ -350,16 +375,21 @@ JOIN Enrolments ON Courses.CourseID = Enrolments.CourseID
 WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
 </pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"Find all enrolments where the student received a grade between 70 and 80 (a credit)."</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT * FROM Enrolments WHERE FinalGrade BETWEEN 70 AND 80;"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"Find all grades where the student received a grade between 70 and 80 (a credit)."</li>
+                        <li class="italic">"List enrolments for course 'CS101' where the final grade was below 85."</li>
+                        <li class="italic">"Find all courses from the `Courses` table that have 'Intro' in their name."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="null-handling" class="content-section space-y-6">
@@ -374,15 +404,20 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                     <div class="code-block my-2"><pre>SELECT CourseName, LecturerID FROM Courses WHERE LecturerID IS NULL;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"Now find all courses that *do* have a lecturer assigned."</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName, LecturerID FROM Courses WHERE LecturerID IS NOT NULL;"></textarea>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"Find all courses that *do* have a lecturer assigned."</li>
+                        <li class="italic">"From the `Evaluations` table, find any records where the satisfaction score was not recorded."</li>
+                        <li class="italic">"List all lecturers who have a position listed in the `Lecturers` table."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="aliases" class="content-section space-y-6">
@@ -391,18 +426,23 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                  <div>
                     <h3 class="text-2xl font-medium text-sky-700 mb-2">Example</h3>
                     <p>Renaming columns for a cleaner report:</p>
-                    <div class="code-block my-2"><pre>SELECT CourseName AS "Course Title", SatisfactionScore AS "Student Rating" FROM Enrolments;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT CourseName AS "Course Title", Faculty AS "Department" FROM Courses;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your Turn: Try Aliasing</h3>
-                    <p class="mb-2 italic text-slate-600">"Create a report from the `Courses` table showing the `CourseName` as "Course" and the `Faculty` as "Department"."</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT CourseName AS Course, Faculty AS Department FROM Courses;"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try Aliasing</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"From the `Grades` table, display the `FinalGrade` as 'Student Mark'."</li>
+                        <li class="italic">"Show the `LecturerName` as 'Instructor' and `Position` as 'Job Title' from the `Lecturers` table."</li>
+                        <li class="italic">"Display the `CourseID` as 'Code' from the `Courses` table."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="aggregate-functions" class="content-section space-y-6">
@@ -415,18 +455,23 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
                 <div>
                     <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question</h3>
                      <p class="italic text-xl">"What is the total number of student enrolments across all listed courses?"</p>
-                    <div class="code-block my-2"><pre>SELECT SUM(FinalGrade) AS TotalGradePoints FROM Enrolments;</pre></div>
+                    <div class="code-block my-2"><pre>SELECT COUNT(*) AS TotalEnrolments FROM Enrolments;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Enrolments">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                     <p class="mb-2 italic text-slate-600">"What is the average final grade for all enrolments? Also, what are the lowest and highest grades achieved?"</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT AVG(FinalGrade), MIN(FinalGrade), MAX(FinalGrade) FROM Enrolments;"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                     <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"What is the average final grade for all enrolments?"</li>
+                        <li class="italic">"Find the lowest and highest satisfaction scores recorded in the `Evaluations` table."</li>
+                        <li class="italic">"How many courses are in the `Courses` table?"</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="group-by" class="content-section space-y-6">
@@ -443,16 +488,21 @@ WHERE Faculty = 'Science' AND (Enrolments > 100 OR SatisfactionScore > 4.5);
 FROM Courses
 GROUP BY LecturerID;</pre></div>
                 </div>
-                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"How many courses does each faculty offer?"</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT Faculty, COUNT(*) AS CoursesPerFaculty FROM Courses GROUP BY Faculty;"></textarea>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Grades">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"From the `Courses` table, how many courses does each faculty offer?"</li>
+                        <li class="italic">"What is the average final grade for each course? (Use the `Enrolments` and `Grades` tables conceptually, or query `Grades` grouped by `CourseID` for a simpler version)."</li>
+                        <li class="italic">"Find the average satisfaction score for each course from the `Evaluations` table."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
             
             <section id="having-clause" class="content-section space-y-6">
@@ -469,24 +519,61 @@ GROUP BY LecturerID;</pre></div>
 SELECT Faculty, AVG(SatisfactionScore) AS AvgSatisfaction
 FROM Courses
 JOIN Enrolments ON Courses.CourseID = Enrolments.CourseID
+JOIN Evaluations ON Enrolments.EnrolmentID = Evaluations.EnrolmentID
 GROUP BY Faculty
 HAVING AVG(SatisfactionScore) > 4.2;</pre></div>
                 </div>
                 <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="Courses">
-                    <h3 class="text-xl font-medium text-sky-700 mb-3">Try another question below: </h3>
-                    <p class="mb-2 italic text-slate-600">"Which lecturers are teaching more than one course?"</p>
-                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="SELECT LecturerID, COUNT(*) AS NumCourses FROM Courses WHERE LecturerID IS NOT NULL GROUP BY LecturerID HAVING COUNT(*) > 1;"></textarea>
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"Which lecturers are teaching more than one course?"</li>
+                        <li class="italic">"From the `Grades` table, show the courses where the average final grade is above 80."</li>
+                        <li class="italic">"From the `Enrolments` table, list the students who are enrolled in more than 2 courses."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your SQL query here..."></textarea>
                      <div class="flex flex-wrap gap-2 mt-2">
                         <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
                     </div>
                     <div class="sql-result-message mt-3 text-sm"></div>
                     <div class="sql-result-output table-container mt-3"></div>
                 </div>
+                <div class="database-explorer-reference mt-8"></div>
+            </section>
+
+            <section id="keys-conceptual" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Understanding Keys (The Links in the Chain)</h2>
+                <p class="text-lg leading-relaxed">To connect tables, databases use a system of keys. Understanding this is fundamental to using `JOIN`s.</p>
+                <div class="mt-6 grid md:grid-cols-2 gap-8 items-start">
+                     <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">🔑 Primary Key (PK)</h3>
+                        <p class="text-slate-600">A column (or set of columns) that <strong class="font-medium">uniquely identifies</strong> each row in a table. It cannot contain NULL values, and each value must be unique.</p>
+                        <p class="text-sm italic mt-2">Think of it as a Student ID number or a Course Code. There's only one of each.</p>
+                        <div class="code-block mt-3 text-xs"><pre>
+-- Lecturers Table --
+| LecturerID (PK) | LecturerName | ... |
+|-----------------|--------------|-----|
+| 101             | Dr. Turing   | ... |
+| 102             | Prof. Ogilvy | ... |
+                        </pre></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-xl text-sky-700 mb-2">🔗 Foreign Key (FK)</h3>
+                        <p class="text-slate-600">A column in one table that is a <strong class="font-medium">link to the Primary Key</strong> of another table. This is how relationships are created.</p>
+                        <p class="text-sm italic mt-2">The `LecturerID` in the `Courses` table refers back to the unique `LecturerID` in the `Lecturers` table.</p>
+                         <div class="code-block mt-3 text-xs"><pre>
+-- Courses Table --
+| CourseID (PK) | CourseName      | LecturerID (FK) |
+|---------------|-----------------|-----------------|
+| CS101         | Intro to Comp.. | 101             |
+| BA202         | Marketing Prin..| 102             |
+                        </pre></div>
+                    </div>
+                </div>
             </section>
 
             <section id="joins-visual" class="content-section space-y-6">
                 <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Visualizing JOINs</h2>
-                <p class="text-lg leading-relaxed">Thinking of tables as circles can help visualize how JOINs work to combine related data.</p>
+                <p class="text-lg leading-relaxed">Thinking of tables as circles can help visualize how JOINs work to combine related data using keys.</p>
                 <div class="mt-6 grid md:grid-cols-2 gap-8 text-center">
                     <div>
                         <h3 class="font-semibold text-xl text-sky-700 mb-3">INNER JOIN</h3>
@@ -505,14 +592,36 @@ HAVING AVG(SatisfactionScore) > 4.2;</pre></div>
                         <p class="mt-4 text-slate-600">Returns <strong class="font-medium">all</strong> rows from the left table (Courses), and the matched rows from the right table. If a course has no lecturer assigned, you get NULL.</p>
                     </div>
                 </div>
-                <div class="mt-8">
-                    <h3 class="text-2xl font-medium text-sky-700 mb-2">Conceptual Example</h3>
+            </section>
+
+            <section id="joins-practice" class="content-section space-y-6">
+                <h2 class="text-3xl font-semibold text-sky-800 border-b-2 border-sky-200 pb-2">Guided Tour: `JOIN`s in Action</h2>
+                <div class="bg-sky-50 border-l-4 border-sky-300 p-4 rounded-md">
+                    <p class="font-semibold text-sky-800">Scenario:</p>
+                    <p class="italic text-sky-700 mt-1">"We need a report that lists each course's name alongside the name of the lecturer who teaches it. This information is in two separate tables."</p>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-medium text-sky-700 mt-4 mb-2">Example Question:</h3>
                     <p class="italic text-xl">"Create a report showing each course name and the name of the lecturer who teaches it."</p>
-                    <div class="code-block my-1 text-xs"><pre>
+                    <div class="code-block my-2"><pre>
 SELECT Courses.CourseName, Lecturers.LecturerName
 FROM Courses
 INNER JOIN Lecturers ON Courses.LecturerID = Lecturers.LecturerID;</pre></div>
                 </div>
+                <div class="interactive-sql-widget border p-4 rounded-lg shadow bg-white" data-table-name="JOIN">
+                    <h3 class="text-xl font-medium text-sky-700 mb-3">Your turn: Try below questions</h3>
+                    <ul class="list-decimal list-inside text-sm text-slate-600 space-y-2 mb-3">
+                        <li class="italic">"List all courses from the `Courses` table, and if they have a lecturer, show the lecturer's name. Make sure all courses appear, even if their lecturer is unknown." (Hint: Use a `LEFT JOIN`).</li>
+                        <li class="italic">"Show the names of all 'Professor' rank lecturers and the names of the courses they teach."</li>
+                    </ul>
+                    <textarea class="sql-query-input w-full p-2 border border-slate-300 rounded-md h-24 resize-none" placeholder="Type your JOIN query here..."></textarea>
+                     <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="run-sql-button px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 transition-colors">Run SQL</button>
+                    </div>
+                    <div class="sql-result-message mt-3 text-sm"></div>
+                    <div class="sql-result-output table-container mt-3"></div>
+                </div>
+                <div class="database-explorer-reference mt-8"></div>
             </section>
 
             <section id="union-conceptual" class="content-section space-y-6">
@@ -538,7 +647,7 @@ SELECT StaffName FROM AdminStaff;</pre></div>
                 <div class="code-block my-1 text-xs"><pre>
 SELECT CourseID, StudentID, SatisfactionScore
 FROM Enrolments
-WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre></div>
+WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Evaluations);</pre></div>
             </section>
             
             <section id="sql-vs-excel" class="content-section space-y-6">
@@ -689,28 +798,87 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
             { "LecturerID": 105, "LecturerName": "Prof. Khan", "Position": "Professor" },
             { "LecturerID": 106, "LecturerName": "Dr. Skinner", "Position": "Lecturer" }
         ],
+        "Students": [
+            { "StudentID": "S123", "StudentName": "John Smith", "Major": "Computer Science" },
+            { "StudentID": "S456", "StudentName": "Jane Doe", "Major": "Biology" },
+            { "StudentID": "S789", "StudentName": "Peter Jones", "Major": "English" },
+            { "StudentID": "S999", "StudentName": "Mary Williams", "Major": "Computer Science" }
+        ],
         "Enrolments": [
-            { "EnrolmentID": 1, "CourseID": "CS101", "StudentID": "S123", "FinalGrade": 85, "SatisfactionScore": 4.5 },
-            { "EnrolmentID": 2, "CourseID": "BA202", "StudentID": "S123", "FinalGrade": 72, "SatisfactionScore": 4.2 },
-            { "EnrolmentID": 3, "CourseID": "CS101", "StudentID": "S456", "FinalGrade": 91, "SatisfactionScore": 4.8 },
-            { "EnrolmentID": 4, "CourseID": "HU301", "StudentID": "S789", "FinalGrade": 88, "SatisfactionScore": 4.9 },
-            { "EnrolmentID": 5, "CourseID": "SC210", "StudentID": "S123", "FinalGrade": 65, "SatisfactionScore": 3.9 },
-            { "EnrolmentID": 6, "CourseID": "SC210", "StudentID": "S456", "FinalGrade": 70, "SatisfactionScore": 4.0 },
-            { "EnrolmentID": 7, "CourseID": "CS305", "StudentID": "S789", "FinalGrade": 75, "SatisfactionScore": 4.4 },
-            { "EnrolmentID": 8, "CourseID": "BA101", "StudentID": "S789", "FinalGrade": 61, "SatisfactionScore": 3.5 },
-            { "EnrolmentID": 9, "CourseID": "ED401", "StudentID": "S456", "FinalGrade": 89, "SatisfactionScore": 5.0 },
-            { "EnrolmentID": 10, "CourseID": "CS101", "StudentID": "S999", "FinalGrade": 82, "SatisfactionScore": 4.6 }
+            { "EnrolmentID": 1, "CourseID": "CS101", "StudentID": "S123" },
+            { "EnrolmentID": 2, "CourseID": "BA202", "StudentID": "S123" },
+            { "EnrolmentID": 3, "CourseID": "CS101", "StudentID": "S456" },
+            { "EnrolmentID": 4, "CourseID": "HU301", "StudentID": "S789" },
+            { "EnrolmentID": 5, "CourseID": "SC210", "StudentID": "S123" },
+            { "EnrolmentID": 6, "CourseID": "SC210", "StudentID": "S456" },
+            { "EnrolmentID": 7, "CourseID": "CS305", "StudentID": "S789" },
+            { "EnrolmentID": 8, "CourseID": "BA101", "StudentID": "S789" },
+            { "EnrolmentID": 9, "CourseID": "ED401", "StudentID": "S456" },
+            { "EnrolmentID": 10, "CourseID": "CS101", "StudentID": "S999" }
+        ],
+        "Grades": [
+            { "GradeID": 1, "EnrolmentID": 1, "FinalGrade": 85 },
+            { "GradeID": 2, "EnrolmentID": 2, "FinalGrade": 72 },
+            { "GradeID": 3, "EnrolmentID": 3, "FinalGrade": 91 },
+            { "GradeID": 4, "EnrolmentID": 4, "FinalGrade": 88 },
+            { "GradeID": 5, "EnrolmentID": 5, "FinalGrade": 65 },
+            { "GradeID": 6, "EnrolmentID": 6, "FinalGrade": 70 },
+            { "GradeID": 7, "EnrolmentID": 7, "FinalGrade": 75 },
+            { "GradeID": 8, "EnrolmentID": 8, "FinalGrade": 61 },
+            { "GradeID": 9, "EnrolmentID": 9, "FinalGrade": 89 },
+            { "GradeID": 10, "EnrolmentID": 10, "FinalGrade": 82 }
+        ],
+        "Evaluations": [
+            { "EvaluationID": 1, "EnrolmentID": 1, "SatisfactionScore": 4.5 },
+            { "EvaluationID": 2, "EnrolmentID": 2, "SatisfactionScore": 4.2 },
+            { "EvaluationID": 3, "EnrolmentID": 3, "SatisfactionScore": 4.8 },
+            { "EvaluationID": 4, "EnrolmentID": 4, "SatisfactionScore": 4.9 },
+            { "EvaluationID": 5, "EnrolmentID": 5, "SatisfactionScore": 3.9 },
+            { "EvaluationID": 6, "EnrolmentID": 6, "SatisfactionScore": 4.0 },
+            { "EvaluationID": 7, "EnrolmentID": 7, "SatisfactionScore": 4.4 },
+            { "EvaluationID": 8, "EnrolmentID": 8, "SatisfactionScore": 3.5 },
+            { "EvaluationID": 9, "EnrolmentID": 9, "SatisfactionScore": 5.0 },
+            { "EvaluationID": 10, "EnrolmentID": 10, "SatisfactionScore": 4.6 }
         ]
     };
 
     const navButtons = document.querySelectorAll('.nav-button');
     const contentSections = document.querySelectorAll('.content-section');
     const mainContentArea = document.querySelector('main');
-    const fullDataDisplayContainer = document.getElementById('full-data-display');
-    const tableSelector = document.getElementById('table-selector');
+    
+    function initializeExplorer(container) {
+        if (!container) return;
+        const explorerHtml = `
+            <div class="border-t-2 border-sky-200 pt-6 mt-8">
+                <h3 class="text-2xl font-semibold text-sky-800 mb-4">Reference: Database Tables</h3>
+                <div class="flex items-center space-x-2 mb-4">
+                    <label class="font-medium text-slate-700">Select a Table to View:</label>
+                    <select class="page-table-selector p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="Courses">Courses</option>
+                        <option value="Lecturers">Lecturers</option>
+                        <option value="Students">Students</option>
+                        <option value="Enrolments">Enrolments</option>
+                        <option value="Grades">Grades</option>
+                        <option value="Evaluations">Evaluations</option>
+                    </select>
+                </div>
+                <div class="page-data-display table-container"></div>
+            </div>`;
+        container.innerHTML = explorerHtml;
+        
+        const selector = container.querySelector('.page-table-selector');
+        const display = container.querySelector('.page-data-display');
 
-    function displayFullDataTable(tableName) {
-        if (fullDataDisplayContainer) {
+        selector.addEventListener('change', (event) => {
+            displayFullDataTable(event.target.value, display);
+        });
+        
+        // Initial display
+        displayFullDataTable(selector.value, display);
+    }
+
+    function displayFullDataTable(tableName, containerElement) {
+        if (containerElement) {
             const table = document.createElement('table');
             table.className = 'w-full text-sm text-left text-slate-500';
             const thead = document.createElement('thead');
@@ -744,8 +912,8 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
                 });
             }
             table.appendChild(tbody);
-            fullDataDisplayContainer.innerHTML = '';
-            fullDataDisplayContainer.appendChild(table);
+            containerElement.innerHTML = '';
+            containerElement.appendChild(table);
         }
     }
 
@@ -754,6 +922,11 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
             section.classList.remove('active');
             if (section.id === targetId) {
                 section.classList.add('active');
+                
+                const explorerContainer = section.querySelector('.database-explorer-reference');
+                if (explorerContainer) {
+                    initializeExplorer(explorerContainer);
+                }
             }
         });
         navButtons.forEach(button => {
@@ -764,14 +937,20 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
         });
         mainContentArea.scrollTop = 0;
 
-        if (targetId === 'db-explorer' && tableSelector) {
-            displayFullDataTable(tableSelector.value);
+        if (targetId === 'db-explorer') {
+            const mainExplorerDisplay = document.getElementById('full-data-display');
+            const mainExplorerSelector = document.getElementById('table-selector');
+            if (mainExplorerDisplay && mainExplorerSelector) {
+                 displayFullDataTable(mainExplorerSelector.value, mainExplorerDisplay);
+            }
         }
     }
-
-    if(tableSelector) {
-        tableSelector.addEventListener('change', (event) => {
-            displayFullDataTable(event.target.value);
+    
+    const mainExplorerSelector = document.getElementById('table-selector');
+    if(mainExplorerSelector) {
+        mainExplorerSelector.addEventListener('change', (event) => {
+            const mainExplorerDisplay = document.getElementById('full-data-display');
+            displayFullDataTable(event.target.value, mainExplorerDisplay);
             const playgroundWidget = document.querySelector('#db-explorer .interactive-sql-widget');
             if(playgroundWidget) {
                 playgroundWidget.dataset.tableName = event.target.value;
@@ -799,8 +978,8 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
         
         runButton.addEventListener('click', () => {
             let tableName = widget.dataset.tableName;
-            if (tableName === 'Dynamic' && tableSelector) {
-                tableName = tableSelector.value;
+            if (tableName === 'Dynamic' && mainExplorerSelector) {
+                tableName = mainExplorerSelector.value;
             }
             const dataset = datasets[tableName];
             
@@ -813,14 +992,14 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
                 resultMessage.className = 'sql-result-message mt-3 text-sm text-amber-600';
                 return;
             }
-            if (!dataset) {
+            if (!dataset && tableName !== 'JOIN') {
                 resultMessage.textContent = `Error: Dataset for table '${tableName}' not found.`;
                 resultMessage.className = 'sql-result-message mt-3 text-sm text-red-600';
                 return;
             }
 
             try {
-                const results = executeSimpleSQL(query, dataset, tableName);
+                const results = executeSimpleSQL(query, datasets, tableName);
                 displayResults(results, resultOutput, resultMessage);
             } catch (error) {
                 resultMessage.textContent = `Error: ${error.message}`;
@@ -831,17 +1010,90 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
     });
 
 
-    function executeSimpleSQL(query, data, expectedTableName) {
+    function executeSimpleSQL(query, allData, defaultTableName) {
         query = query.replace(/\s+/g, ' ').trim().replace(/;$/, '');
         
+        // Handle JOINs
+        const joinMatch = query.match(/FROM\s+([a-zA-Z0-9_]+)\s+(INNER|LEFT)\s+JOIN\s+([a-zA-Z0-9_]+)\s+ON\s+([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)\s*=\s*([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)/i);
+
+        if (joinMatch) {
+            const table1Name = joinMatch[1];
+            const joinType = joinMatch[2].toUpperCase();
+            const table2Name = joinMatch[3];
+            const onCondition1 = joinMatch[4];
+            const onCondition2 = joinMatch[5];
+
+            const table1 = allData[table1Name];
+            const table2 = allData[table2Name];
+
+            if (!table1 || !table2) throw new Error("One or both tables in JOIN not found.");
+            
+            const [t1Alias, t1Col] = onCondition1.split('.');
+            const [t2Alias, t2Col] = onCondition2.split('.');
+            
+            // This simple parser assumes aliases match table names. A real one would parse aliases.
+            if (t1Alias.toLowerCase() !== table1Name.toLowerCase() || t2Alias.toLowerCase() !== table2Name.toLowerCase()) {
+                 // Try swapping them
+                 if (t1Alias.toLowerCase() !== table2Name.toLowerCase() || t2Alias.toLowerCase() !== table1Name.toLowerCase()) {
+                    throw new Error("ON condition must use format TableName.ColumnName");
+                 }
+            }
+
+            let joinedData = [];
+            if (joinType === 'INNER') {
+                 table1.forEach(row1 => {
+                    table2.forEach(row2 => {
+                        if (row1[t1Col] === row2[t2Col]) {
+                            joinedData.push({ ...row1, ...row2 });
+                        }
+                    });
+                });
+            } else if (joinType === 'LEFT') {
+                table1.forEach(row1 => {
+                    const matches = table2.filter(row2 => row1[t1Col] === row2[t2Col]);
+                    if (matches.length > 0) {
+                        matches.forEach(match => {
+                            joinedData.push({ ...row1, ...match });
+                        });
+                    } else {
+                        // Create a row with nulls for table2's columns
+                        const nullRow2 = {};
+                        Object.keys(table2[0]).forEach(key => nullRow2[key] = null);
+                        joinedData.push({ ...row1, ...nullRow2 });
+                    }
+                });
+            }
+            
+            // For JOINs, the subsequent clauses would need to be applied to `joinedData`.
+            // This simplified parser will just return the joined data for projection.
+            const selectClause = query.match(/^SELECT\s+(.+?)\s+FROM/i)[1].trim();
+            const selectedColumns = parseSelectColumns(selectClause, joinedData[0] || null, allData);
+            
+            return joinedData.map(row => {
+                const resultRow = {};
+                selectedColumns.forEach(col => {
+                    const [tableName, colName] = col.expression.includes('.') ? col.expression.split('.') : [null, col.expression];
+                    if (row.hasOwnProperty(colName)) {
+                         resultRow[col.alias] = row[colName];
+                    } else {
+                        // Fallback for simple names after join
+                        resultRow[col.alias] = row[col.expression];
+                    }
+                });
+                return resultRow;
+            });
+        }
+        
+        // ---- SINGLE TABLE LOGIC ----
+        const data = allData[defaultTableName];
         const selectFromMatch = query.match(/^SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)/i);
         if (!selectFromMatch) throw new Error("Invalid query. Must start with 'SELECT ... FROM TableName'.");
         
         let selectClause = selectFromMatch[1].trim();
         const fromTable = selectFromMatch[2].trim();
 
-        if (fromTable.toLowerCase() !== expectedTableName.toLowerCase()) {
-            throw new Error(`Table '${fromTable}' not found. This demo supports querying the '${expectedTableName}' table.`);
+        if (fromTable.toLowerCase() !== defaultTableName.toLowerCase()) {
+            throw new Error(`Table '${fromTable}' not found. This demo supports querying the '${defaultTableName}' table.`);
         }
 
         let processedData = [...data.map(row => ({...row}))]; 
@@ -1009,11 +1261,10 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
         return processedData;
     }
     
-    function parseSelectColumns(selectClause, sampleRow) {
+    function parseSelectColumns(selectClause, sampleRow, allData) {
         const columns = [];
         const parts = selectClause.split(',').map(p => p.trim());
-        const sampleRowKeys = sampleRow ? Object.keys(sampleRow).map(k => k.toLowerCase()) : [];
-
+        
         if (selectClause.trim() === '*') {
             if (!sampleRow) throw new Error("Cannot use SELECT * on an empty or undefined table structure.");
             return Object.keys(sampleRow).map(colName => ({expression: colName, alias: colName, isAggregate: false}));
@@ -1028,29 +1279,18 @@ WHERE SatisfactionScore > (SELECT AVG(SatisfactionScore) FROM Enrolments);</pre>
             } else {
                 expression = part;
                 alias = expression.replace(/\(.*\)/, '').split('.').pop();
-                if (expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)$/i)) {
+                if (expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_.]+)\s*\)$/i)) {
                     alias = expression;
                 }
             }
             
-            const aggMatch = expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_]+)\s*\)$/i);
+            const aggMatch = expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(\*|[a-zA-Z0-9_.]+)\s*\)$/i);
             if (aggMatch) {
                 const aggFunc = aggMatch[1].toUpperCase();
                 let aggCol = aggMatch[2].trim();
-                if (aggCol === '*' && aggFunc === 'COUNT') {
-                    // Valid
-                } else if (aggCol !== '*' && sampleRow && !sampleRowKeys.includes(aggCol.toLowerCase())) {
-                    throw new Error(`Column '${aggCol}' inside ${aggFunc}() not found.`);
-                } else if (aggCol === '*' && aggFunc !== 'COUNT') {
-                    throw new Error(`'*' can only be used with COUNT aggregate function.`);
-                }
                 columns.push({ expression, alias, isAggregate: true, aggFunc, aggCol });
             } else {
-                if (sampleRow && !sampleRowKeys.includes(expression.toLowerCase())) {
-                    throw new Error(`Column '${expression}' in SELECT list not found.`);
-                }
-                const actualExpressionName = sampleRow ? (Object.keys(sampleRow).find(k => k.toLowerCase() === expression.toLowerCase()) || expression) : expression;
-                columns.push({ expression: actualExpressionName, alias, isAggregate: false });
+                columns.push({ expression, alias, isAggregate: false });
             }
         });
         return columns;
